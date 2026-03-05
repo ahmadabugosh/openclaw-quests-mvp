@@ -5,6 +5,7 @@ export type Quest = {
   videoUrl: string;
   blogUrl: string;
   steps: string[];
+  helpLinks: { label: string; url: string }[];
 };
 
 export const QUESTS: Quest[] = [
@@ -19,6 +20,10 @@ export const QUESTS: Quest[] = [
       "SSH into the machine using your terminal.",
       "Run a simple command like `uname -a` to verify access.",
     ],
+    helpLinks: [
+      { label: "OpenClaw VPS setup docs", url: "https://docs.openclaw.ai/get-started/vps" },
+      { label: "SSH quickstart", url: "https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys" },
+    ],
   },
   {
     id: 2,
@@ -30,6 +35,10 @@ export const QUESTS: Quest[] = [
       "Install Node.js and required system packages.",
       "Run the OpenClaw installer script.",
       "Verify with `openclaw --version`.",
+    ],
+    helpLinks: [
+      { label: "OpenClaw install guide", url: "https://docs.openclaw.ai/get-started/install" },
+      { label: "Node.js LTS downloads", url: "https://nodejs.org/en/download" },
     ],
   },
   {
@@ -43,6 +52,10 @@ export const QUESTS: Quest[] = [
       "Generate an API key.",
       "Add provider + model to your OpenClaw config.",
     ],
+    helpLinks: [
+      { label: "Model providers in OpenClaw", url: "https://docs.openclaw.ai/models/providers" },
+      { label: "OpenRouter keys", url: "https://openrouter.ai/keys" },
+    ],
   },
   {
     id: 4,
@@ -54,6 +67,10 @@ export const QUESTS: Quest[] = [
       "Create a bot/app in your chosen channel.",
       "Store the token in OpenClaw secrets/config.",
       "Start gateway and confirm channel is active.",
+    ],
+    helpLinks: [
+      { label: "Telegram integration guide", url: "https://docs.openclaw.ai/channels/telegram" },
+      { label: "Discord integration guide", url: "https://docs.openclaw.ai/channels/discord" },
     ],
   },
   {
@@ -67,6 +84,10 @@ export const QUESTS: Quest[] = [
       "Ask 5 different prompts.",
       "Confirm session history is captured.",
     ],
+    helpLinks: [
+      { label: "How sessions work", url: "https://docs.openclaw.ai/core/sessions" },
+      { label: "Prompt examples", url: "https://resources.learnopenclaw.ai/prompting-openclaw" },
+    ],
   },
   {
     id: 6,
@@ -78,6 +99,10 @@ export const QUESTS: Quest[] = [
       "Create `IDENTITY.md` in your workspace.",
       "Set your agent name and role.",
       "Restart and verify the agent responds with identity.",
+    ],
+    helpLinks: [
+      { label: "Identity file reference", url: "https://docs.openclaw.ai/core/identity" },
+      { label: "Agent personality tips", url: "https://resources.learnopenclaw.ai/agent-personality-guide" },
     ],
   },
   {
@@ -91,6 +116,10 @@ export const QUESTS: Quest[] = [
       "Add a few durable facts.",
       "Confirm file exists with non-empty content.",
     ],
+    helpLinks: [
+      { label: "Memory best practices", url: "https://docs.openclaw.ai/core/memory" },
+      { label: "Daily notes workflow", url: "https://resources.learnopenclaw.ai/openclaw-memory-workflow" },
+    ],
   },
   {
     id: 8,
@@ -102,6 +131,10 @@ export const QUESTS: Quest[] = [
       "Create a simple reminder cron job.",
       "Ensure the job is enabled.",
       "List cron jobs to verify persistence.",
+    ],
+    helpLinks: [
+      { label: "Cron scheduler docs", url: "https://docs.openclaw.ai/tools/cron" },
+      { label: "Cron expression helper", url: "https://crontab.guru/" },
     ],
   },
   {
@@ -115,6 +148,10 @@ export const QUESTS: Quest[] = [
       "Confirm web results are returned.",
       "Verify tool usage appears in session history.",
     ],
+    helpLinks: [
+      { label: "web_search tool reference", url: "https://docs.openclaw.ai/tools/web-search" },
+      { label: "Research prompt templates", url: "https://resources.learnopenclaw.ai/research-prompts" },
+    ],
   },
   {
     id: 10,
@@ -126,6 +163,10 @@ export const QUESTS: Quest[] = [
       "Create a recurring cron task.",
       "Wait for one execution cycle.",
       "Confirm lastStatus is `ok`.",
+    ],
+    helpLinks: [
+      { label: "Recurring jobs tutorial", url: "https://docs.openclaw.ai/tools/cron/recurring" },
+      { label: "Automation examples", url: "https://resources.learnopenclaw.ai/openclaw-automation-examples" },
     ],
   },
   {
@@ -139,6 +180,10 @@ export const QUESTS: Quest[] = [
       "Install one new skill package.",
       "Verify it appears in your skills directory.",
     ],
+    helpLinks: [
+      { label: "ClawHub docs", url: "https://docs.openclaw.ai/skills/clawhub" },
+      { label: "Skill installation guide", url: "https://resources.learnopenclaw.ai/install-openclaw-skills" },
+    ],
   },
   {
     id: 12,
@@ -150,6 +195,10 @@ export const QUESTS: Quest[] = [
       "Create a Twitter developer app.",
       "Store API credentials securely.",
       "Verify OpenClaw detects Twitter integration.",
+    ],
+    helpLinks: [
+      { label: "X/Twitter integration docs", url: "https://docs.openclaw.ai/integrations/twitter" },
+      { label: "Twitter API setup", url: "https://developer.x.com/en/docs/x-api/getting-started/getting-access-to-the-x-api" },
     ],
   },
 ];

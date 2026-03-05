@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ClawCreature } from "@/app/components/claw-creature";
 import { generateCreature } from "@/lib/creature";
 import { QUESTS } from "@/lib/quests";
@@ -5,6 +6,30 @@ import { QUESTS } from "@/lib/quests";
 type ProfilePageProps = {
   params: Promise<{ username: string }>;
 };
+
+export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
+  const { username } = await params;
+  const profileUrl = `https://quests.openclaw.ai/u/${username}`;
+  const imageUrl = "https://quests.openclaw.ai/file.svg";
+
+  return {
+    title: `@${username} — OpenClaw Operator Level 1`,
+    description: `See @${username}'s hatched OpenClaw creature and completed onboarding quests.`,
+    openGraph: {
+      title: `@${username} — OpenClaw Operator Level 1`,
+      description: `I hatched my OpenClaw agent. Start your own quest!`,
+      url: profileUrl,
+      type: "profile",
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: `${username} OpenClaw badge` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `@${username} — OpenClaw Operator Level 1`,
+      description: `I hatched my OpenClaw agent. Start your own quest!`,
+      images: [imageUrl],
+    },
+  };
+}
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username } = await params;

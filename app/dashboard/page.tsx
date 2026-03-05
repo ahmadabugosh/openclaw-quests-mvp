@@ -1,3 +1,4 @@
+import { VerifyProofForm } from "@/app/components/verify-proof-form";
 import { QUESTS } from "@/lib/quests";
 import { getEggStage, getProgressPercent } from "@/lib/progress";
 
@@ -29,25 +30,30 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <ul className="mt-6 space-y-2">
-            {QUESTS.map((quest) => {
-              const state =
-                quest.id <= completedCount
-                  ? "completed"
-                  : quest.id === activeQuest.id
-                    ? "active"
-                    : "todo";
+          <details className="mt-6 md:pointer-events-none" open>
+            <summary className="cursor-pointer rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium md:cursor-default md:border-0 md:px-0 md:py-0">
+              Checklist ({completedCount}/12)
+            </summary>
+            <ul className="mt-3 space-y-2 md:mt-6">
+              {QUESTS.map((quest) => {
+                const state =
+                  quest.id <= completedCount
+                    ? "completed"
+                    : quest.id === activeQuest.id
+                      ? "active"
+                      : "todo";
 
-              return (
-                <li key={quest.id} className="rounded-lg border border-slate-700 px-3 py-2 text-sm">
-                  {state === "completed" && "✅ "}
-                  {state === "active" && "→ "}
-                  {state === "todo" && "○ "}
-                  {quest.title}
-                </li>
-              );
-            })}
-          </ul>
+                return (
+                  <li key={quest.id} className="rounded-lg border border-slate-700 px-3 py-2 text-sm">
+                    {state === "completed" && "✅ "}
+                    {state === "active" && "→ "}
+                    {state === "todo" && "○ "}
+                    {quest.title}
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
         </aside>
 
         <section className="rounded-2xl border border-slate-700 bg-slate-900 p-6 md:col-span-3">
@@ -76,18 +82,19 @@ export default function DashboardPage() {
           </a>
 
           <div className="mt-6 rounded-lg border border-slate-700 p-4">
-            <label className="mb-2 block text-sm text-slate-300" htmlFor="proof-code">
-              Paste your proof code to verify:
-            </label>
-            <div className="flex gap-2">
-              <input
-                id="proof-code"
-                placeholder="ocq://..."
-                className="w-full rounded-md border border-slate-600 bg-slate-950 px-3 py-2"
-              />
-              <button className="rounded-md bg-cyan-400 px-4 py-2 font-semibold text-slate-900">✓</button>
-            </div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">Help links</h2>
+            <ul className="mt-3 space-y-2 text-sm">
+              {activeQuest.helpLinks.map((link) => (
+                <li key={link.url}>
+                  <a className="text-cyan-200 underline hover:text-cyan-100" href={link.url} target="_blank" rel="noreferrer">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
+
+          <VerifyProofForm />
         </section>
       </div>
     </main>

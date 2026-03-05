@@ -288,12 +288,12 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [ ] Create hatching animation (CSS/JS)
 - [ ] Generate shareable badge card (SVG → PNG via API)
 - [x] Build public profile page (`/u/:username`)
-- [ ] Add OG meta tags for social sharing previews
+- [x] Add OG meta tags for social sharing previews
 
 ### Phase 4: Polish & Launch (5 tasks)
-- [ ] Quest instructions + help links for each task
-- [ ] Error states, empty states, loading states
-- [ ] Mobile responsive pass (stacked layout)
+- [x] Quest instructions + help links for each task
+- [x] Error states, empty states, loading states
+- [x] Mobile responsive pass (stacked layout)
 - [ ] Analytics (page views + completion funnel)
 - [ ] Launch checklist: domain, SSL, seed data, smoke test
 
