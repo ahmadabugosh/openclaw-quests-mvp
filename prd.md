@@ -264,13 +264,13 @@ Renders as SVG for crisp scaling + easy badge generation.
 ## Task Breakdown
 
 ### Phase 1: Foundation (8 tasks)
-- [ ] Initialize Next.js project with Tailwind
+- [x] Initialize Next.js project with Tailwind
 - [ ] Set up SQLite database + models (users, quest_progress)
 - [ ] Implement GitHub OAuth + email/password auth
-- [ ] Create landing page with egg hero animation
-- [ ] Build split-screen dashboard layout (egg + checklist left, quest panel right)
-- [ ] Build quest detail panel with video embed + written steps + verify input
-- [ ] Create quest content (video placeholder + written guide) for all 12 quests
+- [x] Create landing page with egg hero animation
+- [x] Build split-screen dashboard layout (egg + checklist left, quest panel right)
+- [x] Build quest detail panel with video embed + written steps + verify input
+- [x] Create quest content (video placeholder + written guide) for all 12 quests
 - [ ] Set up Railway deployment
 
 ### Phase 2: Verification Engine (7 tasks)
@@ -280,7 +280,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [ ] Build proof code decoder + signature verification on platform backend
 - [ ] Implement quest completion logic (proof data → which quests pass)
 - [ ] Add quest progress state management + persistence
-- [ ] Progress calculation + egg crack stage logic (0/25/50/75/100%)
+- [x] Progress calculation + egg crack stage logic (0/25/50/75/100%)
 
 ### Phase 3: Creature & Rewards (6 tasks)
 - [ ] Design SVG claw creature with swappable traits (color, accessory, expression, pattern, eyes)
