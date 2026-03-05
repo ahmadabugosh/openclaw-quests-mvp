@@ -41,5 +41,18 @@ function migrate(db: QuestsDatabase): void {
     );
 
     CREATE INDEX IF NOT EXISTS idx_quest_progress_user_id ON quest_progress(user_id);
+
+    CREATE TABLE IF NOT EXISTS analytics_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_type TEXT NOT NULL,
+      page_path TEXT,
+      quest_id INTEGER,
+      user_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_type ON analytics_events(event_type);
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON analytics_events(created_at);
   `);
 }

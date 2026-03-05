@@ -52,3 +52,62 @@ body {
 .egg-glow {
   animation: eggGlow 2.5s ease-in-out infinite;
 }
+
+@keyframes hatchEggBurst {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.08) rotate(-6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.7) rotate(10deg);
+    opacity: 0;
+  }
+}
+
+@keyframes hatchCreatureRise {
+  0% {
+    transform: translateY(24px) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hatchPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(34, 211, 238, 0.35);
+  }
+}
+
+.hatch-egg {
+  transition: opacity 0.3s ease;
+}
+
+.hatch-egg--burst {
+  animation: hatchEggBurst 900ms ease-in forwards;
+}
+
+.hatch-creature {
+  opacity: 0;
+}
+
+.hatch-creature--visible {
+  animation: hatchCreatureRise 700ms 400ms ease-out forwards;
+}
+
+.hatch-glow {
+  width: 12rem;
+  height: 12rem;
+  border-radius: 9999px;
+  animation: hatchPulse 2s ease-in-out infinite;
+}

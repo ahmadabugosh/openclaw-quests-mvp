@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { AnalyticsTracker } from "@/app/components/analytics-tracker";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
+      <AnalyticsTracker path="/" />
       <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 py-20 text-center">
         <div className="space-y-3">
           <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">OpenClaw Quests MVP</p>

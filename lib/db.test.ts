@@ -25,7 +25,7 @@ describe("database schema", () => {
       .all() as Array<{ name: string }>;
 
     expect(tables.map((t) => t.name)).toEqual(
-      expect.arrayContaining(["quest_progress", "users"]),
+      expect.arrayContaining(["analytics_events", "quest_progress", "users"]),
     );
   });
 });

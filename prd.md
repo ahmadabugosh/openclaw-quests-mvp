@@ -285,7 +285,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 ### Phase 3: Creature & Rewards (6 tasks)
 - [x] Design SVG claw creature with swappable traits (color, accessory, expression, pattern, eyes)
 - [x] Build creature generation function (completion data → traits)
-- [ ] Create hatching animation (CSS/JS)
+- [x] Create hatching animation (CSS/JS)
 - [ ] Generate shareable badge card (SVG → PNG via API)
 - [x] Build public profile page (`/u/:username`)
 - [x] Add OG meta tags for social sharing previews
@@ -294,7 +294,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [x] Quest instructions + help links for each task
 - [x] Error states, empty states, loading states
 - [x] Mobile responsive pass (stacked layout)
-- [ ] Analytics (page views + completion funnel)
+- [x] Analytics (page views + completion funnel)
 - [ ] Launch checklist: domain, SSL, seed data, smoke test
 
 **Total: 26 tasks**

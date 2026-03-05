@@ -1,4 +1,5 @@
 import { VerifyProofForm } from "@/app/components/verify-proof-form";
+import { AnalyticsTracker } from "@/app/components/analytics-tracker";
 import { QUESTS } from "@/lib/quests";
 import { getEggStage, getProgressPercent } from "@/lib/progress";
 
@@ -10,6 +11,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
+      <AnalyticsTracker path="/dashboard" />
       <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-5">
         <aside className="rounded-2xl border border-slate-700 bg-slate-900 p-6 md:col-span-2">
           <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Your Agent</p>
