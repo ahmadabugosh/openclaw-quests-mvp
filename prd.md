@@ -286,7 +286,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [x] Design SVG claw creature with swappable traits (color, accessory, expression, pattern, eyes)
 - [x] Build creature generation function (completion data → traits)
 - [x] Create hatching animation (CSS/JS)
-- [ ] Generate shareable badge card (SVG → PNG via API)
+- [x] Generate shareable badge card (SVG → PNG via API)
 - [x] Build public profile page (`/u/:username`)
 - [x] Add OG meta tags for social sharing previews
 
