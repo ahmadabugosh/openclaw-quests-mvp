@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "npx next start -H 0.0.0.0 -p ${PORT:-3000}"
+startCommand = "npx next start -H 0.0.0.0 -p 3000"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"
