@@ -265,7 +265,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 
 ### Phase 1: Foundation (8 tasks)
 - [x] Initialize Next.js project with Tailwind
-- [ ] Set up SQLite database + models (users, quest_progress)
+- [x] Set up SQLite database + models (users, quest_progress)
 - [ ] Implement GitHub OAuth + email/password auth
 - [x] Create landing page with egg hero animation
 - [x] Build split-screen dashboard layout (egg + checklist left, quest panel right)
@@ -279,7 +279,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [ ] Build `openclaw quests check --dry-run` to preview shared data
 - [x] Build proof code decoder + signature verification on platform backend
 - [x] Implement quest completion logic (proof data → which quests pass)
-- [ ] Add quest progress state management + persistence
+- [x] Add quest progress state management + persistence
 - [x] Progress calculation + egg crack stage logic (0/25/50/75/100%)
 
 ### Phase 3: Creature & Rewards (6 tasks)
