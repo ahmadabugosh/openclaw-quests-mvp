@@ -266,7 +266,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 ### Phase 1: Foundation (8 tasks)
 - [x] Initialize Next.js project with Tailwind
 - [x] Set up SQLite database + models (users, quest_progress)
-- [ ] Implement GitHub OAuth + email/password auth
+- [x] Implement GitHub OAuth + email/password auth
 - [x] Create landing page with egg hero animation
 - [x] Build split-screen dashboard layout (egg + checklist left, quest panel right)
 - [x] Build quest detail panel with video embed + written steps + verify input

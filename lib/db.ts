@@ -42,6 +42,18 @@ function migrate(db: QuestsDatabase): void {
 
     CREATE INDEX IF NOT EXISTS idx_quest_progress_user_id ON quest_progress(user_id);
 
+    CREATE TABLE IF NOT EXISTS sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      session_token_hash TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+      expires_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+
     CREATE TABLE IF NOT EXISTS analytics_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       event_type TEXT NOT NULL,
