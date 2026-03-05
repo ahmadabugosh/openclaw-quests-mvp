@@ -275,8 +275,8 @@ Renders as SVG for crisp scaling + easy badge generation.
 
 ### Phase 2: Verification Engine (7 tasks)
 - [x] Design proof code format + HMAC signing spec
-- [ ] Build `openclaw quests check` CLI command (scans local instance, generates signed proof)
-- [ ] Build `openclaw quests check --dry-run` to preview shared data
+- [x] Build `openclaw quests check` CLI command (scans local instance, generates signed proof)
+- [x] Build `openclaw quests check --dry-run` to preview shared data
 - [x] Build proof code decoder + signature verification on platform backend
 - [x] Implement quest completion logic (proof data → which quests pass)
 - [x] Add quest progress state management + persistence
