@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getBadgeImagePath } from "@/lib/profile";
 
 type BadgePageProps = {
   params: Promise<{ username: string }>;
@@ -6,7 +7,7 @@ type BadgePageProps = {
 
 export default async function BadgePage({ params }: BadgePageProps) {
   const { username } = await params;
-  const badgeUrl = `/u/${username}/badge`;
+  const badgeUrl = getBadgeImagePath(username);
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">

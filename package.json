@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "quests:check": "tsx bin/openclaw-quests-check.ts",
-    "quests:check:dry-run": "tsx bin/openclaw-quests-check.ts --dry-run"
+    "quests:check:dry-run": "tsx bin/openclaw-quests-check.ts --dry-run",
+    "launch:checklist": "tsx bin/launch-checklist.ts"
   },
   "dependencies": {
     "next": "16.1.6",

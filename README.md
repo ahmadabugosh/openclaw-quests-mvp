@@ -17,3 +17,17 @@ npm run quests:check:dry-run
 Optional env var:
 
 - `OPENCLAW_HOME` — path to OpenClaw home directory (defaults to `~/.openclaw`)
+
+## Launch checklist helper
+
+Run a quick deployment readiness check (domain, SSL, seed data, smoke test):
+
+```bash
+QUESTS_DOMAIN=quests.openclaw.ai \
+QUESTS_SSL_ENABLED=true \
+QUESTS_SEED_DATA_READY=true \
+QUESTS_SMOKE_URL=https://quests.openclaw.ai/login \
+npm run launch:checklist
+```
+
+See `docs/launch-checklist.md` for details.

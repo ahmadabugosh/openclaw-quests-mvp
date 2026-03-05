@@ -295,7 +295,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [x] Error states, empty states, loading states
 - [x] Mobile responsive pass (stacked layout)
 - [x] Analytics (page views + completion funnel)
-- [ ] Launch checklist: domain, SSL, seed data, smoke test
+- [x] Launch checklist: domain, SSL, seed data, smoke test
 
 **Total: 26 tasks**
 **Estimated effort: RALPH can handle this in one loop**

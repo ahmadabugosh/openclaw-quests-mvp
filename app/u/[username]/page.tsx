@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClawCreature } from "@/app/components/claw-creature";
 import { generateCreature } from "@/lib/creature";
 import { QUESTS } from "@/lib/quests";
+import { getBadgeImagePath, getBadgePagePath } from "@/lib/profile";
 
 type ProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -10,7 +11,7 @@ type ProfilePageProps = {
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   const { username } = await params;
   const profileUrl = `https://quests.openclaw.ai/u/${username}`;
-  const imageUrl = `https://quests.openclaw.ai/u/${username}/badge`;
+  const imageUrl = `https://quests.openclaw.ai${getBadgeImagePath(username)}`;
 
   return {
     title: `@${username} — OpenClaw Operator Level 1`,
@@ -69,7 +70,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </ul>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href={`/u/${username}/badge`} className="inline-block rounded-md border border-cyan-300 px-4 py-2 font-semibold text-cyan-200">
+            <a href={getBadgePagePath(username)} className="inline-block rounded-md border border-cyan-300 px-4 py-2 font-semibold text-cyan-200">
               View share badge
             </a>
             <a href="https://openclaw.ai" className="inline-block rounded-md bg-cyan-400 px-4 py-2 font-semibold text-slate-900">
