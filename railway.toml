@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "PORT=${PORT:-3000} HOSTNAME=0.0.0.0 node .next/standalone/server.js"
+startCommand = "npx next start -H 0.0.0.0 -p ${PORT:-3000}"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"
