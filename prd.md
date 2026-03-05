@@ -274,11 +274,11 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [ ] Set up Railway deployment
 
 ### Phase 2: Verification Engine (7 tasks)
-- [ ] Design proof code format + HMAC signing spec
+- [x] Design proof code format + HMAC signing spec
 - [ ] Build `openclaw quests check` CLI command (scans local instance, generates signed proof)
 - [ ] Build `openclaw quests check --dry-run` to preview shared data
-- [ ] Build proof code decoder + signature verification on platform backend
-- [ ] Implement quest completion logic (proof data → which quests pass)
+- [x] Build proof code decoder + signature verification on platform backend
+- [x] Implement quest completion logic (proof data → which quests pass)
 - [ ] Add quest progress state management + persistence
 - [x] Progress calculation + egg crack stage logic (0/25/50/75/100%)
 
