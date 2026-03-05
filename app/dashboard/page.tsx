@@ -1,27 +1,57 @@
 "use client";
 
-import { useState } from "react";
-import { VerifyProofForm } from "@/app/components/verify-proof-form";
+import { useState, useEffect } from "react";
+import { QuestVerify } from "@/app/components/verify-proof-form";
 import { AnalyticsTracker } from "@/app/components/analytics-tracker";
 import { CrackingEgg } from "@/app/components/cracking-egg";
 import { QUESTS } from "@/lib/quests";
 import { getCrackStage, getProgressPercent } from "@/lib/progress";
 
+const STORAGE_KEY = "openclaw-quests-completed";
+
 export default function DashboardPage() {
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set());
   const [activeQuestId, setActiveQuestId] = useState(1);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const ids = JSON.parse(saved) as number[];
+        setCompletedIds(new Set(ids));
+        // Set active quest to first uncompleted
+        const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
+        if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    if (completedIds.size > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedIds]));
+    }
+  }, [completedIds]);
 
   const completedCount = completedIds.size;
   const progress = getProgressPercent(completedCount);
   const crackStage = getCrackStage(completedCount);
   const activeQuest = QUESTS.find((q) => q.id === activeQuestId) ?? QUESTS[0];
 
-  function handleVerified(questIds: number[]) {
+  function handleComplete(questId: number) {
     setCompletedIds((prev) => {
       const next = new Set(prev);
-      questIds.forEach((id) => next.add(id));
+      next.add(questId);
       return next;
     });
+    // Auto-advance to next quest
+    const nextQuest = QUESTS.find((q) => q.id > questId && !completedIds.has(q.id));
+    if (nextQuest) {
+      setTimeout(() => setActiveQuestId(nextQuest.id), 800);
+    }
   }
 
   function getQuestState(questId: number) {
@@ -85,7 +115,7 @@ export default function DashboardPage() {
         </aside>
 
         {/* RIGHT PANEL — Active Quest Content */}
-        <section className="rounded-2xl border border-slate-700 bg-slate-900 p-6 md:col-span-3">
+        <section className="min-w-0 rounded-2xl border border-slate-700 bg-slate-900 p-6 md:col-span-3">
           <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">
             Quest {activeQuest.id} of 12
           </p>
@@ -107,16 +137,16 @@ export default function DashboardPage() {
             </h2>
             <div className="space-y-3">
               {activeQuest.guide.map((step, i) => (
-                <div key={i} className="rounded-lg border border-slate-700 bg-slate-950 p-4">
-                  <div className="flex items-start gap-3">
+                <div key={i} className="rounded-lg border border-slate-700 bg-slate-950 p-4 overflow-hidden">
+                  <div className="flex items-start gap-3 min-w-0">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-900 text-xs font-bold text-cyan-300">
                       {i + 1}
                     </span>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="font-medium text-slate-200">{step.title}</p>
-                      <p className="mt-1 text-sm text-slate-400">{step.description}</p>
+                      <p className="mt-1 text-sm text-slate-400 whitespace-pre-line">{step.description}</p>
                       {step.command && (
-                        <pre className="mt-2 rounded bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-green-400 overflow-x-auto">
+                        <pre className="mt-2 rounded bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-green-400 overflow-x-auto whitespace-pre-wrap break-words">
                           <code>{step.command}</code>
                         </pre>
                       )}
@@ -151,8 +181,12 @@ export default function DashboardPage() {
             </ul>
           </div>
 
-          {/* Verify */}
-          <VerifyProofForm />
+          {/* Quest completion */}
+          <QuestVerify
+            questId={activeQuest.id}
+            isCompleted={completedIds.has(activeQuest.id)}
+            onComplete={handleComplete}
+          />
         </section>
       </div>
     </main>
