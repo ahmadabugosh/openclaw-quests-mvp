@@ -283,11 +283,11 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [x] Progress calculation + egg crack stage logic (0/25/50/75/100%)
 
 ### Phase 3: Creature & Rewards (6 tasks)
-- [ ] Design SVG claw creature with swappable traits (color, accessory, expression, pattern, eyes)
-- [ ] Build creature generation function (completion data → traits)
+- [x] Design SVG claw creature with swappable traits (color, accessory, expression, pattern, eyes)
+- [x] Build creature generation function (completion data → traits)
 - [ ] Create hatching animation (CSS/JS)
 - [ ] Generate shareable badge card (SVG → PNG via API)
-- [ ] Build public profile page (`/u/:username`)
+- [x] Build public profile page (`/u/:username`)
 - [ ] Add OG meta tags for social sharing previews
 
 ### Phase 4: Polish & Launch (5 tasks)
