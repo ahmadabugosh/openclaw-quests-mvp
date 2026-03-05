@@ -271,7 +271,7 @@ Renders as SVG for crisp scaling + easy badge generation.
 - [x] Build split-screen dashboard layout (egg + checklist left, quest panel right)
 - [x] Build quest detail panel with video embed + written steps + verify input
 - [x] Create quest content (video placeholder + written guide) for all 12 quests
-- [ ] Set up Railway deployment
+- [x] Set up Railway deployment
 
 ### Phase 2: Verification Engine (7 tasks)
 - [x] Design proof code format + HMAC signing spec

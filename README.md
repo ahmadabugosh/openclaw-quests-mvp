@@ -31,3 +31,16 @@ npm run launch:checklist
 ```
 
 See `docs/launch-checklist.md` for details.
+
+## Railway deployment
+
+This project is configured for Railway via `railway.toml`.
+
+- Start command: `npm run start`
+- Health check path: `/api/health`
+
+Deploy with the provided automation script:
+
+```bash
+/root/.openclaw/workspace/scripts/railway-deploy-and-fix.sh .
+```

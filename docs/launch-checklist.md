@@ -15,7 +15,7 @@ Use this before announcing the app publicly.
 - Mark readiness with `QUESTS_SEED_DATA_READY=true`
 
 ## 4) Smoke Test
-- Validate deployed app returns 200 from a health URL (e.g. `/login`)
+- Validate deployed app returns 200 from the dedicated health URL (`/api/health`)
 - Run checklist command with `QUESTS_SMOKE_URL`
 
 ## Automation Helper

@@ -1,13 +1,13 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import Database from "better-sqlite3";
 
-export type QuestsDatabase = DatabaseSync;
+export type QuestsDatabase = Database.Database;
 
 export function openDatabase(dbPath: string): QuestsDatabase {
   mkdirSync(dirname(dbPath), { recursive: true });
-  const db = new DatabaseSync(dbPath);
-  db.exec("PRAGMA foreign_keys = ON");
+  const db = new Database(dbPath);
+  db.pragma("foreign_keys = ON");
   migrate(db);
   return db;
 }
