@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { QuestVerify } from "@/app/components/verify-proof-form";
 import { AnalyticsTracker } from "@/app/components/analytics-tracker";
 import { CrackingEgg } from "@/app/components/cracking-egg";
+import { HatchCelebration } from "@/app/components/hatch-celebration";
 import { QUESTS } from "@/lib/quests";
 import { getCrackStage, getProgressPercent } from "@/lib/progress";
 
@@ -12,6 +13,8 @@ const STORAGE_KEY = "openclaw-quests-completed";
 export default function DashboardPage() {
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set());
   const [activeQuestId, setActiveQuestId] = useState(1);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [hasHatched, setHasHatched] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -20,10 +23,11 @@ export default function DashboardPage() {
       if (saved) {
         const ids = JSON.parse(saved) as number[];
         setCompletedIds(new Set(ids));
-        // Set active quest to first uncompleted
         const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
         if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
       }
+      const hatched = localStorage.getItem("openclaw-quests-hatched");
+      if (hatched) setHasHatched(true);
     } catch {
       // ignore
     }
@@ -54,6 +58,23 @@ export default function DashboardPage() {
     }
   }
 
+  function handleUncomplete(questId: number) {
+    setCompletedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(questId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }
+
+  function handleHatch() {
+    setShowCelebration(true);
+    setHasHatched(true);
+    localStorage.setItem("openclaw-quests-hatched", "true");
+  }
+
+  const canHatch = completedCount >= 10 && !hasHatched;
+
   function getQuestState(questId: number) {
     if (completedIds.has(questId)) return "completed";
     if (questId === activeQuestId) return "active";
@@ -63,6 +84,16 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
       <AnalyticsTracker path="/dashboard" />
+
+      {/* Celebration overlay */}
+      {showCelebration && (
+        <HatchCelebration
+          agentName=""
+          onViewCertificate={() => {
+            window.location.href = "/certificate";
+          }}
+        />
+      )}
       <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-5">
         {/* LEFT PANEL — Egg + Checklist */}
         <aside className="rounded-2xl border border-slate-700 bg-slate-900 p-6 md:col-span-2">
@@ -83,6 +114,25 @@ export default function DashboardPage() {
               />
             </div>
           </div>
+
+          {/* Hatch button */}
+          {canHatch && (
+            <button
+              onClick={handleHatch}
+              className="mt-4 w-full rounded-xl bg-gradient-to-r from-amber-500 via-red-500 to-amber-500 px-4 py-4 text-lg font-black text-white shadow-lg shadow-amber-500/20 transition-transform hover:scale-105 active:scale-95 animate-pulse"
+            >
+              🦞 Hatch Your Lobster! 🦞
+            </button>
+          )}
+
+          {hasHatched && (
+            <a
+              href="/certificate"
+              className="mt-4 block w-full rounded-xl border-2 border-amber-500/50 px-4 py-3 text-center font-bold text-amber-400 transition-colors hover:bg-amber-500/10"
+            >
+              🏆 View Certificate
+            </a>
+          )}
 
           <div className="mt-6">
             <p className="mb-3 text-sm font-medium text-slate-300">Checklist</p>
@@ -186,6 +236,7 @@ export default function DashboardPage() {
             questId={activeQuest.id}
             isCompleted={completedIds.has(activeQuest.id)}
             onComplete={handleComplete}
+            onUncomplete={handleUncomplete}
           />
         </section>
       </div>

@@ -7,9 +7,10 @@ interface Props {
   questId: number;
   isCompleted: boolean;
   onComplete: (questId: number) => void;
+  onUncomplete: (questId: number) => void;
 }
 
-export function QuestVerify({ questId, isCompleted, onComplete }: Props) {
+export function QuestVerify({ questId, isCompleted, onComplete, onUncomplete }: Props) {
   const [input, setInput] = useState("");
   const [feedback, setFeedback] = useState<{ valid: boolean; message: string } | null>(null);
 
@@ -17,9 +18,19 @@ export function QuestVerify({ questId, isCompleted, onComplete }: Props) {
 
   if (isCompleted) {
     return (
-      <div className="mt-6 rounded-lg border border-green-800 bg-green-950/30 p-4 text-center">
-        <p className="text-lg font-semibold text-green-300">✅ Quest Complete!</p>
-        <p className="mt-1 text-sm text-green-400/70">Nice work — on to the next one.</p>
+      <div className="mt-6 rounded-lg border border-green-800 bg-green-950/30 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold text-green-300">✅ Quest Complete!</p>
+            <p className="mt-1 text-sm text-green-400/70">Nice work — on to the next one.</p>
+          </div>
+          <button
+            onClick={() => onUncomplete(questId)}
+            className="rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-500 hover:text-slate-300"
+          >
+            ↩ Redo
+          </button>
+        </div>
       </div>
     );
   }
