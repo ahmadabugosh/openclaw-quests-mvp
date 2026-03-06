@@ -18,23 +18,48 @@ export default function DashboardPage() {
   const [hasHatched, setHasHatched] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
 
-  // Load from localStorage on mount
+  // Load from server first, fall back to localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const ids = JSON.parse(saved) as number[];
-        setCompletedIds(new Set(ids));
-        const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
-        if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+    async function loadProgress() {
+      try {
+        // Try server first
+        const res = await fetch("/api/quests/progress");
+        if (res.ok) {
+          const data = await res.json();
+          const ids = data.completedIds as number[];
+          setCompletedIds(new Set(ids));
+          if (data.hasHatched) setHasHatched(true);
+          if (data.email) setEmailVerified(true);
+          // Sync to localStorage as cache
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+          if (data.hasHatched) localStorage.setItem("openclaw-quests-hatched", "true");
+          if (data.email) localStorage.setItem("openclaw-quests-email", data.email);
+          const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
+          if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+          return;
+        }
+      } catch {
+        // Server unavailable, fall back to localStorage
       }
-      const hatched = localStorage.getItem("openclaw-quests-hatched");
-      if (hatched) setHasHatched(true);
-      const savedEmail = localStorage.getItem("openclaw-quests-email");
-      if (savedEmail) setEmailVerified(true);
-    } catch {
-      // ignore
+
+      // Fallback to localStorage
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const ids = JSON.parse(saved) as number[];
+          setCompletedIds(new Set(ids));
+          const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
+          if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+        }
+        const hatched = localStorage.getItem("openclaw-quests-hatched");
+        if (hatched) setHasHatched(true);
+        const savedEmail = localStorage.getItem("openclaw-quests-email");
+        if (savedEmail) setEmailVerified(true);
+      } catch {
+        // ignore
+      }
     }
+    loadProgress();
   }, []);
 
   // Save to localStorage on change
@@ -55,6 +80,12 @@ export default function DashboardPage() {
       next.add(questId);
       return next;
     });
+    // Save to server
+    fetch("/api/quests/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ questId, action: "complete" }),
+    }).catch(() => {});
     // Auto-advance to next quest
     const nextQuest = QUESTS.find((q) => q.id > questId && !completedIds.has(q.id));
     if (nextQuest) {
@@ -69,15 +100,23 @@ export default function DashboardPage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
       return next;
     });
+    // Save to server
+    fetch("/api/quests/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ questId, action: "uncomplete" }),
+    }).catch(() => {});
   }
 
   function handleHatch() {
     setShowCelebration(true);
     setHasHatched(true);
     localStorage.setItem("openclaw-quests-hatched", "true");
+    // Save to server
+    fetch("/api/quests/hatch", { method: "POST" }).catch(() => {});
   }
 
-  const canHatch = completedCount >= 10 && !hasHatched;
+  const canHatch = completedCount >= 12 && !hasHatched;
 
   function getQuestState(questId: number) {
     if (completedIds.has(questId)) return "completed";

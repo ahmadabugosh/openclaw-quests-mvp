@@ -171,15 +171,6 @@ export function HatchCelebration({ agentName, onViewCertificate }: Props) {
               >
                 🏆 View My Certificate
               </button>
-              <button
-                onClick={() => {
-                  const text = `🦞 I just hatched my own AI agent with @OpenClaw!\n\n12 quests completed. From zero to a fully autonomous agent running 24/7.\n\nStart your journey → https://openclaw.ai`;
-                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
-                }}
-                className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
-              >
-                Share on 𝕏
-              </button>
             </div>
           </div>
         )}

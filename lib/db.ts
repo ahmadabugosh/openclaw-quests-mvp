@@ -66,5 +66,30 @@ function migrate(db: QuestsDatabase): void {
 
     CREATE INDEX IF NOT EXISTS idx_analytics_events_type ON analytics_events(event_type);
     CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON analytics_events(created_at);
+
+    CREATE TABLE IF NOT EXISTS payments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      method TEXT NOT NULL CHECK (method IN ('stripe', 'crypto')),
+      status TEXT NOT NULL DEFAULT 'paid',
+      stripe_session_id TEXT,
+      tx_hash TEXT,
+      amount_cents INTEGER NOT NULL DEFAULT 2000,
+      created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+
+    CREATE TABLE IF NOT EXISTS attestations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      uid TEXT NOT NULL,
+      url TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_attestations_user_id ON attestations(user_id);
   `);
 }

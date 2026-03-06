@@ -132,7 +132,7 @@ function CertificateContent() {
   }
 
   const hatchDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-  const isHatched = completedCount >= 10;
+  const isHatched = completedCount >= 12;
   const ogImageUrl = `/api/og?name=${encodeURIComponent(userName)}&date=${encodeURIComponent(hatchDate)}`;
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -200,7 +200,7 @@ function CertificateContent() {
           <div className="mb-8 rounded-2xl border-2 border-green-500/30 bg-green-950/20 p-8 text-center">
             <p className="text-5xl mb-3">✅</p>
             <h2 className="text-2xl font-bold text-green-300">Payment Confirmed!</h2>
-            <p className="mt-2 text-slate-400">Click below to mint your credential on Base. This creates a permanent, verifiable attestation on-chain.</p>
+            <p className="mt-2 text-slate-400">Click below to mint your credential. This creates a permanent, verifiable attestation on-chain and issues your official certificate.</p>
             <button onClick={handleAttest} disabled={isAttesting} className="mt-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-10 py-4 font-bold text-white text-lg transition-transform hover:scale-105 disabled:opacity-50">
               {isAttesting ? "⏳ Minting on Base..." : "🔗 Mint On-Chain Credential"}
             </button>
@@ -255,7 +255,7 @@ function CertificateContent() {
           </div>
         ) : (
           /* OFFICIAL CERTIFICATE (paid + minted) */
-          <div className="relative overflow-hidden rounded-2xl border-4 border-amber-500/50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-14 shadow-2xl shadow-amber-500/10">
+          <div className="print-certificate relative overflow-hidden rounded-2xl border-4 border-amber-500/50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-14 shadow-2xl shadow-amber-500/10">
             {/* Decorative corners */}
             <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-amber-500/40 rounded-tl-2xl" />
             <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-amber-500/40 rounded-tr-2xl" />
@@ -329,12 +329,55 @@ function CertificateContent() {
                   </div>
                 </div>
 
+                {attestation && (
+                  <div className="mt-6 rounded-lg border border-slate-700/50 bg-slate-800/20 px-4 py-3">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-600 mb-1">On-Chain Credential</p>
+                    <p className="text-sm text-cyan-400 font-mono break-all">
+                      ID: {attestation.uid.slice(0, 10)}...{attestation.uid.slice(-8)}
+                    </p>
+                    <a href={attestation.url} target="_blank" rel="noreferrer" className="text-xs text-cyan-500 underline hover:text-cyan-400">
+                      View on Base →
+                    </a>
+                  </div>
+                )}
+
                 <div className="mt-8">
                   <p className="text-xs text-slate-600 italic">&quot;From egg to operator — one quest at a time.&quot;</p>
                   <p className="mt-3 text-xs text-slate-700">openclaw.ai • Verified on Base via Ethereum Attestation Service</p>
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ACTIONS: Print & Email */}
+        {isPaid && attestation && (
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => window.print()}
+              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+            >
+              🖨️ Print / Save as PDF
+            </button>
+            <button
+              onClick={async () => {
+                const email = localStorage.getItem("openclaw-quests-email");
+                if (!email) { setError("No email found. Please log in again."); return; }
+                try {
+                  const res = await fetch("/api/certificate/email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, name: userName, date: hatchDate, questsCompleted: completedCount, attestationUid: attestation?.uid, attestationUrl: attestation?.url }),
+                  });
+                  const data = await res.json();
+                  if (data.ok) { setError(""); alert("Certificate sent to " + email + "!"); }
+                  else { setError(data.error || "Failed to send email"); }
+                } catch { setError("Network error sending email."); }
+              }}
+              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+            >
+              📧 Email Yourself
+            </button>
           </div>
         )}
 

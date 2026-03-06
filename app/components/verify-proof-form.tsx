@@ -53,7 +53,11 @@ export function QuestVerify({ questId, isCompleted, onComplete, onUncomplete }: 
     const result = verification.validate(input);
     setFeedback(result);
     if (result.valid) {
-      setTimeout(() => onComplete(questId), 1200);
+      setTimeout(() => {
+        setInput("");
+        setFeedback(null);
+        onComplete(questId);
+      }, 1200);
     }
   }
 
