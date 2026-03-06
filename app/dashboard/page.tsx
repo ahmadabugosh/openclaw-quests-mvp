@@ -8,10 +8,14 @@ import { HatchCelebration } from "@/app/components/hatch-celebration";
 import { EmailGate } from "@/app/components/email-gate";
 import { QUESTS } from "@/lib/quests";
 import { getCrackStage, getProgressPercent } from "@/lib/progress";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const STORAGE_KEY = "openclaw-quests-completed";
 
-export default function DashboardPage() {
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const isAdmin = searchParams.get("admin") === "true";
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set());
   const [activeQuestId, setActiveQuestId] = useState(1);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -128,6 +132,12 @@ export default function DashboardPage() {
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
       <AnalyticsTracker path="/dashboard" />
 
+      {isAdmin && (
+        <div className="mb-4 rounded-lg border border-amber-500/50 bg-amber-950/30 px-4 py-2 text-center text-sm text-amber-300">
+          🔧 Admin Mode — checkboxes enabled for quick testing
+        </div>
+      )}
+
       {/* Email gate */}
       {!emailVerified && (
         <EmailGate onVerified={() => setEmailVerified(true)} />
@@ -189,22 +199,36 @@ export default function DashboardPage() {
                 const state = getQuestState(quest.id);
                 return (
                   <li key={quest.id}>
-                    <button
-                      onClick={() => setActiveQuestId(quest.id)}
-                      className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
-                        state === "active"
-                          ? "border-cyan-500 bg-cyan-950/40 text-cyan-100"
-                          : state === "completed"
-                            ? "border-green-800 bg-green-950/30 text-green-300"
-                            : "border-slate-700 text-slate-400 hover:border-slate-600 hover:text-slate-300"
-                      }`}
-                    >
-                      {state === "completed" && "✅ "}
-                      {state === "active" && "→ "}
-                      {state === "todo" && "○ "}
-                      <span className="text-slate-500 mr-1">{quest.id}.</span>
-                      {quest.title}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {isAdmin && (
+                        <input
+                          type="checkbox"
+                          checked={completedIds.has(quest.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) handleComplete(quest.id);
+                            else handleUncomplete(quest.id);
+                          }}
+                          className="h-4 w-4 shrink-0 accent-green-500"
+                          title={`Admin: toggle quest ${quest.id}`}
+                        />
+                      )}
+                      <button
+                        onClick={() => setActiveQuestId(quest.id)}
+                        className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                          state === "active"
+                            ? "border-cyan-500 bg-cyan-950/40 text-cyan-100"
+                            : state === "completed"
+                              ? "border-green-800 bg-green-950/30 text-green-300"
+                              : "border-slate-700 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                        }`}
+                      >
+                        {state === "completed" && "✅ "}
+                        {state === "active" && "→ "}
+                        {state === "todo" && "○ "}
+                        <span className="text-slate-500 mr-1">{quest.id}.</span>
+                        {quest.title}
+                      </button>
+                    </div>
                   </li>
                 );
               })}
@@ -289,5 +313,14 @@ export default function DashboardPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 grid place-items-center text-slate-400">Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
