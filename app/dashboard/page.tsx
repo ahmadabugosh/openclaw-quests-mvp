@@ -5,6 +5,7 @@ import { QuestVerify } from "@/app/components/verify-proof-form";
 import { AnalyticsTracker } from "@/app/components/analytics-tracker";
 import { CrackingEgg } from "@/app/components/cracking-egg";
 import { HatchCelebration } from "@/app/components/hatch-celebration";
+import { EmailGate } from "@/app/components/email-gate";
 import { QUESTS } from "@/lib/quests";
 import { getCrackStage, getProgressPercent } from "@/lib/progress";
 
@@ -15,6 +16,7 @@ export default function DashboardPage() {
   const [activeQuestId, setActiveQuestId] = useState(1);
   const [showCelebration, setShowCelebration] = useState(false);
   const [hasHatched, setHasHatched] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -28,6 +30,8 @@ export default function DashboardPage() {
       }
       const hatched = localStorage.getItem("openclaw-quests-hatched");
       if (hatched) setHasHatched(true);
+      const savedEmail = localStorage.getItem("openclaw-quests-email");
+      if (savedEmail) setEmailVerified(true);
     } catch {
       // ignore
     }
@@ -84,6 +88,11 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
       <AnalyticsTracker path="/dashboard" />
+
+      {/* Email gate */}
+      {!emailVerified && (
+        <EmailGate onVerified={() => setEmailVerified(true)} />
+      )}
 
       {/* Celebration overlay */}
       {showCelebration && (

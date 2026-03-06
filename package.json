@@ -16,12 +16,15 @@
     "launch:checklist": "tsx bin/launch-checklist.ts"
   },
   "dependencies": {
+    "@ethereum-attestation-service/eas-sdk": "^2.9.0",
     "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^12.6.2",
     "canvas-confetti": "^1.9.4",
+    "ethers": "^6.16.0",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "stripe": "^20.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
