@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -14,26 +14,37 @@ function CertificateContent() {
   const [nameInput, setNameInput] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "crypto" | null>(null);
   const [isAttesting, setIsAttesting] = useState(false);
   const [attestation, setAttestation] = useState<{ uid: string; url: string } | null>(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showCryptoModal, setShowCryptoModal] = useState(false);
+  const [txHash, setTxHash] = useState("");
+  const [cryptoVerifying, setCryptoVerifying] = useState(false);
+  const [showMintCelebration, setShowMintCelebration] = useState(false);
   const [error, setError] = useState("");
+
+  const fireConfetti = useCallback(async () => {
+    try {
+      const confetti = (await import("canvas-confetti")).default;
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ["#d97706", "#fbbf24", "#67e8f9", "#4ade80"] });
+      setTimeout(() => {
+        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+      }, 400);
+      setTimeout(() => {
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 }, colors: ["#d97706", "#fbbf24", "#67e8f9"] });
+      }, 900);
+    } catch { /* */ }
+  }, []);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const ids = JSON.parse(saved) as number[];
-        setCompletedCount(ids.length);
-      }
+      if (saved) setCompletedCount((JSON.parse(saved) as number[]).length);
       const name = localStorage.getItem(NAME_KEY);
-      if (name) {
-        setUserName(name);
-      } else {
-        setIsEditing(true);
-      }
+      if (name) setUserName(name); else setIsEditing(true);
 
-      // Check if returning from successful payment
       const payment = searchParams.get("payment");
       const sessionId = searchParams.get("session_id");
       if (payment === "success" && sessionId) {
@@ -41,19 +52,11 @@ function CertificateContent() {
         localStorage.setItem("openclaw-quests-paid", "true");
         localStorage.setItem("openclaw-quests-session-id", sessionId);
       }
+      if (localStorage.getItem("openclaw-quests-paid")) setIsPaid(true);
 
-      // Check if already paid
-      const alreadyPaid = localStorage.getItem("openclaw-quests-paid");
-      if (alreadyPaid) setIsPaid(true);
-
-      // Check if already attested
-      const savedAttestation = localStorage.getItem("openclaw-quests-attestation");
-      if (savedAttestation) {
-        setAttestation(JSON.parse(savedAttestation));
-      }
-    } catch {
-      // ignore
-    }
+      const savedAtt = localStorage.getItem("openclaw-quests-attestation");
+      if (savedAtt) setAttestation(JSON.parse(savedAtt));
+    } catch { /* */ }
   }, [searchParams]);
 
   function saveName() {
@@ -64,7 +67,7 @@ function CertificateContent() {
     }
   }
 
-  async function handlePayment() {
+  async function handleStripePayment() {
     setPaymentLoading(true);
     setError("");
     try {
@@ -75,54 +78,63 @@ function CertificateContent() {
         body: JSON.stringify({ email, name: userName }),
       });
       const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.url) window.location.href = data.url;
+      else setError(data.error || "Failed to start checkout");
+    } catch { setError("Network error."); }
+    finally { setPaymentLoading(false); }
+  }
+
+  async function handleCryptoVerify() {
+    if (!txHash.trim()) return;
+    setCryptoVerifying(true);
+    setError("");
+    try {
+      const res = await fetch("/api/payment/verify-crypto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ txHash: txHash.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsPaid(true);
+        setShowCryptoModal(false);
+        localStorage.setItem("openclaw-quests-paid", "true");
+        localStorage.setItem("openclaw-quests-payment-method", "crypto");
       } else {
-        setError(data.error || "Failed to start checkout");
+        setError(data.error || "Could not verify payment.");
       }
-    } catch {
-      setError("Network error. Please try again.");
-    } finally {
-      setPaymentLoading(false);
-    }
+    } catch { setError("Network error."); }
+    finally { setCryptoVerifying(false); }
   }
 
   async function handleAttest() {
     setIsAttesting(true);
     setError("");
     try {
-      const sessionId = localStorage.getItem("openclaw-quests-session-id") || searchParams.get("session_id") || "";
+      const sessionId = localStorage.getItem("openclaw-quests-session-id") || searchParams.get("session_id") || "crypto-payment";
       const res = await fetch("/api/attest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId,
-          name: userName,
-          questsCompleted: completedCount,
-        }),
+        body: JSON.stringify({ sessionId, name: userName, questsCompleted: completedCount }),
       });
       const data = await res.json();
       if (data.uid) {
         const att = { uid: data.uid, url: data.url };
         setAttestation(att);
         localStorage.setItem("openclaw-quests-attestation", JSON.stringify(att));
+        setShowMintCelebration(true);
+        fireConfetti();
       } else {
         setError(data.error || "Failed to create attestation");
       }
-    } catch {
-      setError("Network error. Please try again.");
-    } finally {
-      setIsAttesting(false);
-    }
+    } catch { setError("Network error."); }
+    finally { setIsAttesting(false); }
   }
 
-  const hatchDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
+  const hatchDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const isHatched = completedCount >= 10;
+  const ogImageUrl = `/api/og?name=${encodeURIComponent(userName)}&date=${encodeURIComponent(hatchDate)}`;
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   if (!isHatched) {
     return (
@@ -131,10 +143,7 @@ function CertificateContent() {
           <p className="text-6xl mb-4">🥚</p>
           <h1 className="text-2xl font-bold">Not yet!</h1>
           <p className="mt-2 text-slate-400">Complete at least 10 of 12 quests to earn your certificate.</p>
-          <p className="mt-1 text-slate-500">You&apos;ve completed {completedCount}/12 so far.</p>
-          <a href="/dashboard" className="mt-4 inline-block text-cyan-400 underline hover:text-cyan-300">
-            ← Back to quests
-          </a>
+          <a href="/dashboard" className="mt-4 inline-block text-cyan-400 underline">← Back to quests</a>
         </div>
       </main>
     );
@@ -146,23 +155,10 @@ function CertificateContent() {
         <div className="text-center max-w-md">
           <p className="text-6xl mb-4">🏆</p>
           <h1 className="text-2xl font-bold">Enter Your Name</h1>
-          <p className="mt-2 text-slate-400">This will appear on your certificate.</p>
+          <p className="mt-2 text-slate-400">This will appear on your official certificate.</p>
           <div className="mt-6 flex gap-2">
-            <input
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && saveName()}
-              placeholder="Your full name"
-              className="flex-1 rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-center text-lg focus:border-cyan-500 focus:outline-none"
-              autoFocus
-            />
-            <button
-              onClick={saveName}
-              disabled={!nameInput.trim()}
-              className="rounded-lg bg-cyan-500 px-6 py-3 font-bold text-slate-900 disabled:bg-slate-700"
-            >
-              Continue
-            </button>
+            <input value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveName()} placeholder="Your full name" className="flex-1 rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-center text-lg focus:border-cyan-500 focus:outline-none" autoFocus />
+            <button onClick={saveName} disabled={!nameInput.trim()} className="rounded-lg bg-cyan-500 px-6 py-3 font-bold text-slate-900 disabled:bg-slate-700">Continue</button>
           </div>
         </div>
       </main>
@@ -173,191 +169,214 @@ function CertificateContent() {
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
-          <a href="/dashboard" className="text-sm text-cyan-400 underline hover:text-cyan-300">
-            ← Back to quests
-          </a>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-300"
-            >
-              Edit name
-            </button>
-          </div>
+          <a href="/dashboard" className="text-sm text-cyan-400 underline">← Back to quests</a>
+          <button onClick={() => setIsEditing(true)} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-300">Edit name</button>
         </div>
 
-        {/* Certificate */}
-        <div className={`relative overflow-hidden rounded-2xl border-4 ${isPaid && attestation ? "border-amber-500/50" : "border-slate-700"} bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-12 shadow-2xl`}>
-          {/* Watermark for unpaid */}
-          {!isPaid && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <p className="text-6xl font-black text-slate-700/30 -rotate-45 select-none">PREVIEW</p>
-            </div>
-          )}
-
-          {/* Decorative corners */}
-          <div className="absolute top-0 left-0 w-24 h-24 border-t-4 border-l-4 border-amber-500/30 rounded-tl-2xl" />
-          <div className="absolute top-0 right-0 w-24 h-24 border-t-4 border-r-4 border-amber-500/30 rounded-tr-2xl" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 border-b-4 border-l-4 border-amber-500/30 rounded-bl-2xl" />
-          <div className="absolute bottom-0 right-0 w-24 h-24 border-b-4 border-r-4 border-amber-500/30 rounded-br-2xl" />
-
-          <div className="border-2 border-amber-500/20 rounded-xl p-6 md:p-10">
-            <div className="text-center">
-              {/* Lobster */}
-              <div className="flex justify-center mb-2">
-                <svg viewBox="0 0 240 180" width="120" height="90">
-                  <ellipse cx="120" cy="95" rx="40" ry="45" fill="#ff6b6b" />
-                  <ellipse cx="120" cy="105" rx="34" ry="28" fill="#ff4444" />
-                  <circle cx="108" cy="82" r="10" fill="white" />
-                  <circle cx="132" cy="82" r="10" fill="white" />
-                  <circle cx="110" cy="80" r="5" fill="#1a1a2e" />
-                  <circle cx="134" cy="80" r="5" fill="#1a1a2e" />
-                  <circle cx="111" cy="78" r="2" fill="white" />
-                  <circle cx="135" cy="78" r="2" fill="white" />
-                  <path d="M 110,100 Q 120,112 130,100" fill="none" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" />
-                  <ellipse cx="72" cy="90" rx="14" ry="9" fill="#ff6b6b" transform="rotate(-40,72,90)" />
-                  <ellipse cx="168" cy="90" rx="14" ry="9" fill="#ff6b6b" transform="rotate(40,168,90)" />
-                  <line x1="105" y1="65" x2="88" y2="45" stroke="#ff6b6b" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="135" y1="65" x2="152" y2="45" stroke="#ff6b6b" strokeWidth="2.5" strokeLinecap="round" />
-                  <circle cx="88" cy="45" r="3.5" fill="#ff4444" />
-                  <circle cx="152" cy="45" r="3.5" fill="#ff4444" />
-                </svg>
-              </div>
-
-              <p className="text-sm uppercase tracking-[0.3em] text-amber-400/70">Certificate of Completion</p>
-              <h1 className="mt-4 text-lg uppercase tracking-[0.2em] text-slate-400">OpenClaw Quests</h1>
-
-              <div className="mt-6 mb-2">
-                <p className="text-sm text-slate-500">This certifies that</p>
-                <h2 className="mt-2 text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-amber-200 to-cyan-300">
-                  {userName}
-                </h2>
-              </div>
-
-              <p className="mt-4 text-slate-400 max-w-md mx-auto">
-                has successfully completed all challenges and hatched their AI agent, demonstrating proficiency in:
-              </p>
-
-              <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-2 max-w-lg mx-auto text-sm">
-                {[
-                  "Terminal & SSH", "VPS Management", "AI Model Config",
-                  "OpenClaw Setup", "Chat Integration", "Agent Memory",
-                  "Task Automation", "Web Search & Skills", "Social Media APIs",
-                  "Server Security", "Dashboard Ops", "Full Deployment",
-                ].map((skill) => (
-                  <div key={skill} className="rounded-lg border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-slate-300">
-                    ✦ {skill}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-slate-500">
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-slate-600">Date</p>
-                  <p className="mt-1 text-slate-400">{hatchDate}</p>
-                </div>
-                <div className="h-12 w-px bg-slate-700" />
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-slate-600">Quests</p>
-                  <p className="mt-1 text-slate-400">{completedCount} / 12</p>
-                </div>
-                <div className="h-12 w-px bg-slate-700" />
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-slate-600">Level</p>
-                  <p className="mt-1 text-amber-400 font-semibold">Operator 🦞</p>
-                </div>
-              </div>
-
-              {/* On-chain badge */}
-              {attestation && (
-                <div className="mt-6 rounded-lg border border-green-800 bg-green-950/30 p-3">
-                  <p className="text-xs uppercase tracking-widest text-green-400 mb-1">✅ Verified On-Chain (Base)</p>
-                  <a
-                    href={attestation.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm text-cyan-300 underline hover:text-cyan-200 break-all"
-                  >
-                    {attestation.url}
-                  </a>
-                </div>
-              )}
-
-              <div className="mt-8">
-                <p className="text-xs text-slate-600 italic">
-                  &quot;From egg to operator — one quest at a time.&quot;
-                </p>
-                <p className="mt-2 text-xs text-slate-700">openclaw.ai</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Payment / Attestation CTA */}
+        {/* ===== PAYMENT / MINT CTA — TOP ===== */}
         {!isPaid && (
-          <div className="mt-8 rounded-2xl border border-slate-700 bg-slate-900 p-6 text-center">
-            <h3 className="text-xl font-bold text-slate-100">🏆 Get Your Verified Credential</h3>
-            <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-              Mint your certificate as an on-chain attestation on Base. Share it on LinkedIn, X, or anywhere as proof of your skills.
+          <div className="mb-8 rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-950/20 to-slate-900 p-8 text-center">
+            <p className="text-5xl mb-3">🏆</p>
+            <h2 className="text-2xl font-black text-slate-100">Get Your Verified Credential</h2>
+            <p className="mt-2 text-slate-400 max-w-lg mx-auto">
+              Mint your certificate as a permanent on-chain attestation on Base. Share it on LinkedIn and X as verified proof of your skills.
             </p>
-            <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={handlePayment}
-                disabled={paymentLoading}
-                className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-3 font-bold text-slate-900 transition-transform hover:scale-105 disabled:opacity-50"
-              >
-                {paymentLoading ? "Loading..." : "Pay $20 — Verify with Stripe"}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button onClick={handleStripePayment} disabled={paymentLoading} className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-4 font-bold text-slate-900 text-lg transition-transform hover:scale-105 disabled:opacity-50">
+                {paymentLoading ? "Loading..." : "💳 Pay $20 with Card"}
+              </button>
+              <button onClick={() => setShowCryptoModal(true)} className="rounded-lg border-2 border-blue-500/50 bg-blue-950/20 px-8 py-4 font-bold text-blue-300 text-lg transition-transform hover:scale-105 hover:border-blue-400">
+                🔵 Pay 20 USDC on Base
               </button>
             </div>
-            <p className="mt-3 text-xs text-slate-600">
-              Includes: On-chain EAS attestation on Base • Permanent verifiable credential • Shareable proof link
+            <p className="mt-4 text-xs text-slate-600">
+              Includes: On-chain EAS attestation on Base • Official certificate • Shareable social proof • Permanent verifiable credential
             </p>
-
-            {error && (
-              <p className="mt-3 text-sm text-rose-400">{error}</p>
-            )}
+            {error && !showCryptoModal && <p className="mt-3 text-sm text-rose-400">{error}</p>}
           </div>
         )}
 
         {isPaid && !attestation && (
-          <div className="mt-8 rounded-2xl border border-green-800 bg-green-950/20 p-6 text-center">
-            <h3 className="text-xl font-bold text-green-300">✅ Payment Confirmed!</h3>
-            <p className="mt-2 text-sm text-slate-400">
-              Click below to mint your credential on Base. This creates a permanent, verifiable attestation on-chain.
-            </p>
-            <button
-              onClick={handleAttest}
-              disabled={isAttesting}
-              className="mt-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-3 font-bold text-white transition-transform hover:scale-105 disabled:opacity-50"
-            >
-              {isAttesting ? "Minting on Base..." : "🔗 Mint On-Chain Credential"}
+          <div className="mb-8 rounded-2xl border-2 border-green-500/30 bg-green-950/20 p-8 text-center">
+            <p className="text-5xl mb-3">✅</p>
+            <h2 className="text-2xl font-bold text-green-300">Payment Confirmed!</h2>
+            <p className="mt-2 text-slate-400">Click below to mint your credential on Base. This creates a permanent, verifiable attestation on-chain.</p>
+            <button onClick={handleAttest} disabled={isAttesting} className="mt-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-10 py-4 font-bold text-white text-lg transition-transform hover:scale-105 disabled:opacity-50">
+              {isAttesting ? "⏳ Minting on Base..." : "🔗 Mint On-Chain Credential"}
             </button>
-
-            {error && (
-              <p className="mt-3 text-sm text-rose-400">{error}</p>
-            )}
+            {error && <p className="mt-3 text-sm text-rose-400">{error}</p>}
           </div>
         )}
 
         {attestation && (
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => {
-                const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nView my attestation: ${attestation.url}\n\n@OpenClaw #AIAgents #Web3`;
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
-              }}
-              className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-slate-900"
-            >
-              Share on 𝕏
-            </button>
-            <a
-              href={attestation.url}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 text-center hover:border-cyan-500"
-            >
-              View on EASScan →
-            </a>
+          <div className="mb-8 rounded-2xl border-2 border-green-500/30 bg-green-950/20 p-6 text-center">
+            <p className="text-xs uppercase tracking-widest text-green-400 mb-2">✅ Verified On-Chain (Base)</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a href={attestation.url} target="_blank" rel="noreferrer" className="rounded-lg bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500">
+                🔗 Verify Credential On-Chain
+              </a>
+              <button onClick={() => {
+                const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nVerify: ${attestation.url}\n\n@OpenClaw #AIAgents #Web3`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(ogImageUrl)}`, "_blank");
+              }} className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-700">
+                Share on 𝕏
+              </button>
+              <button onClick={() => {
+                const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                window.open(linkedInUrl, "_blank");
+              }} className="rounded-lg bg-[#0A66C2] px-6 py-3 font-semibold text-white hover:bg-[#004182]">
+                Share on LinkedIn
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ===== CONTENT DEPENDS ON PAID STATUS ===== */}
+        {!isPaid || !attestation ? (
+          /* QUEST SUMMARY (unpaid/pre-mint) */
+          <div className={`relative overflow-hidden rounded-2xl border-2 ${!isPaid ? "border-slate-700" : "border-amber-500/30"} bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-12`}>
+            {!isPaid && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <p className="text-7xl font-black text-slate-700/20 -rotate-45 select-none">PREVIEW</p>
+              </div>
+            )}
+            <div className="text-center">
+              <p className="text-4xl mb-2">🥚→🦞</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Quest Summary</p>
+              <h2 className="mt-3 text-3xl font-bold text-slate-200">{userName}&apos;s Journey</h2>
+              <p className="mt-2 text-slate-400">Completed {completedCount} of 12 quests</p>
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-2 max-w-lg mx-auto text-sm">
+                {["Terminal & SSH", "VPS Management", "AI Model Config", "OpenClaw Setup", "Chat Integration", "Agent Memory", "Task Automation", "Web Search & Skills", "Social Media APIs", "Server Security", "Dashboard Ops", "Full Deployment"].map((skill) => (
+                  <div key={skill} className="rounded-lg border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-slate-400">✦ {skill}</div>
+                ))}
+              </div>
+              <p className="mt-6 text-xs text-slate-600">Completed on {hatchDate}</p>
+            </div>
+          </div>
+        ) : (
+          /* OFFICIAL CERTIFICATE (paid + minted) */
+          <div className="relative overflow-hidden rounded-2xl border-4 border-amber-500/50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-14 shadow-2xl shadow-amber-500/10">
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-amber-500/40 rounded-tl-2xl" />
+            <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-amber-500/40 rounded-tr-2xl" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-amber-500/40 rounded-bl-2xl" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-amber-500/40 rounded-br-2xl" />
+
+            {/* Decorative line pattern */}
+            <div className="absolute top-6 left-6 right-6 bottom-6 border border-amber-500/10 rounded-xl pointer-events-none" />
+
+            <div className="relative border-2 border-amber-500/20 rounded-xl p-8 md:p-12">
+              <div className="text-center">
+                {/* Logo */}
+                <div className="flex justify-center mb-4">
+                  <svg viewBox="0 0 240 180" width="100" height="75">
+                    <ellipse cx="120" cy="95" rx="40" ry="45" fill="#ff6b6b" />
+                    <ellipse cx="120" cy="105" rx="34" ry="28" fill="#ff4444" />
+                    <circle cx="108" cy="82" r="10" fill="white" />
+                    <circle cx="132" cy="82" r="10" fill="white" />
+                    <circle cx="110" cy="80" r="5" fill="#1a1a2e" />
+                    <circle cx="134" cy="80" r="5" fill="#1a1a2e" />
+                    <circle cx="111" cy="78" r="2" fill="white" />
+                    <circle cx="135" cy="78" r="2" fill="white" />
+                    <path d="M 110,100 Q 120,112 130,100" fill="none" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" />
+                    <ellipse cx="72" cy="90" rx="14" ry="9" fill="#ff6b6b" transform="rotate(-40,72,90)" />
+                    <ellipse cx="168" cy="90" rx="14" ry="9" fill="#ff6b6b" transform="rotate(40,168,90)" />
+                  </svg>
+                </div>
+
+                <p className="text-xs uppercase tracking-[0.4em] text-amber-400/60">OpenClaw Academy</p>
+                <div className="mt-1 h-px w-32 mx-auto bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+
+                <h1 className="mt-6 text-sm uppercase tracking-[0.3em] text-amber-400/80">Certificate of Completion</h1>
+
+                <div className="mt-8">
+                  <p className="text-sm text-slate-500 italic">This is to certify that</p>
+                  <h2 className="mt-3 text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-200" style={{ fontFamily: "Georgia, serif" }}>
+                    {userName}
+                  </h2>
+                  <div className="mt-2 h-px w-64 mx-auto bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+                </div>
+
+                <p className="mt-6 text-slate-400 max-w-lg mx-auto leading-relaxed">
+                  has successfully completed the <span className="text-amber-300 font-semibold">OpenClaw Quests Program</span> and demonstrated proficiency in AI agent deployment, automation, and operations. This individual has earned the title of:
+                </p>
+
+                <div className="mt-6 inline-block rounded-xl border-2 border-amber-500/30 bg-amber-950/20 px-8 py-4">
+                  <p className="text-2xl font-black text-amber-300 tracking-wide">🦞 OpenClaw Operator</p>
+                </div>
+
+                <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-2 max-w-2xl mx-auto text-xs">
+                  {["Terminal & SSH", "VPS Management", "AI Model Configuration", "OpenClaw Deployment", "Chat Integration", "Agent Memory Systems", "Task Automation", "Web Search & Skills", "Social Media APIs", "Server Security", "Dashboard Operations", "Full Stack Deployment"].map((skill) => (
+                    <div key={skill} className="rounded border border-slate-700/50 bg-slate-800/30 px-2 py-1 text-slate-400">✦ {skill}</div>
+                  ))}
+                </div>
+
+                <div className="mt-10 flex items-center justify-center gap-10 text-sm">
+                  <div className="text-center">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-600 mb-1">Date Issued</p>
+                    <p className="text-slate-300 font-medium">{hatchDate}</p>
+                    <div className="mt-1 h-px w-24 bg-slate-700" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-600 mb-1">Quests Completed</p>
+                    <p className="text-slate-300 font-medium">{completedCount} / 12</p>
+                    <div className="mt-1 h-px w-24 bg-slate-700" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-600 mb-1">Credential</p>
+                    <p className="text-green-400 font-medium">Verified On-Chain ✓</p>
+                    <div className="mt-1 h-px w-24 bg-slate-700" />
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-xs text-slate-600 italic">&quot;From egg to operator — one quest at a time.&quot;</p>
+                  <p className="mt-3 text-xs text-slate-700">openclaw.ai • Verified on Base via Ethereum Attestation Service</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CRYPTO PAYMENT MODAL */}
+        {showCryptoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4">
+            <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-100">Pay with USDC on Base</h3>
+                <button onClick={() => { setShowCryptoModal(false); setError(""); }} className="text-slate-500 hover:text-slate-300 text-xl">✕</button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-lg border border-blue-800 bg-blue-950/30 p-4">
+                  <p className="text-sm text-blue-300 font-medium mb-2">Send exactly 20 USDC to:</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 rounded bg-slate-950 px-3 py-2 text-sm text-cyan-300 break-all">0xd7aca290774a6def1Fc7C50C185B4e4107988aBc</code>
+                    <button onClick={() => navigator.clipboard.writeText("0xd7aca290774a6def1Fc7C50C185B4e4107988aBc")} className="shrink-0 rounded bg-slate-800 px-2 py-2 text-xs text-slate-400 hover:text-slate-200">Copy</button>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-400">
+                  <p>⚠️ <strong className="text-slate-300">Important:</strong></p>
+                  <ul className="mt-1 space-y-1 text-xs">
+                    <li>• Network: <span className="text-cyan-300">Base</span> (not Ethereum mainnet)</li>
+                    <li>• Token: <span className="text-cyan-300">USDC</span> (not USDT or ETH)</li>
+                    <li>• Amount: <span className="text-cyan-300">20 USDC</span> exactly</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-slate-300 mb-1">Paste your transaction hash:</label>
+                  <input value={txHash} onChange={(e) => { setTxHash(e.target.value); setError(""); }} placeholder="0x..." className="w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none" />
+                </div>
+
+                <button onClick={handleCryptoVerify} disabled={cryptoVerifying || !txHash.trim()} className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white disabled:bg-slate-700 disabled:text-slate-500">
+                  {cryptoVerifying ? "Verifying on Base..." : "Verify Payment"}
+                </button>
+
+                {error && <p className="text-sm text-rose-400 text-center">{error}</p>}
+              </div>
+            </div>
           </div>
         )}
       </div>
