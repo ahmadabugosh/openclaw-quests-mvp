@@ -2,5 +2,5 @@ import { NextResponse } from "next/server";
 import { getHealthPayload } from "@/lib/health";
 
 export function GET() {
-  return NextResponse.json(getHealthPayload());
+  return NextResponse.json({ ...getHealthPayload(), build: "v2-admin" });
 }

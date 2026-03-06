@@ -8,19 +8,24 @@ import { HatchCelebration } from "@/app/components/hatch-celebration";
 import { EmailGate } from "@/app/components/email-gate";
 import { QUESTS } from "@/lib/quests";
 import { getCrackStage, getProgressPercent } from "@/lib/progress";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 const STORAGE_KEY = "openclaw-quests-completed";
 
 function DashboardContent() {
-  const searchParams = useSearchParams();
-  const isAdmin = searchParams.get("admin") === "true";
+  const [isAdmin, setIsAdmin] = useState(false);
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set());
   const [activeQuestId, setActiveQuestId] = useState(1);
   const [showCelebration, setShowCelebration] = useState(false);
   const [hasHatched, setHasHatched] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
+
+  // Check for admin mode
+  useEffect(() => {
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("admin") === "true") {
+      setIsAdmin(true);
+    }
+  }, []);
 
   // Load from server first, fall back to localStorage
   useEffect(() => {
@@ -318,9 +323,5 @@ function DashboardContent() {
 
 
 export default function DashboardPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 grid place-items-center text-slate-400">Loading...</div>}>
-      <DashboardContent />
-    </Suspense>
-  );
+  return <DashboardContent />;
 }
