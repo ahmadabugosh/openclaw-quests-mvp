@@ -216,7 +216,7 @@ function CertificateContent() {
                 🔗 Proof of Certification
               </a>
               <button onClick={() => {
-                const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nVerify: ${attestation.url}\n\n@OpenClaw #AIAgents #Web3`;
+                const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nVerify: ${attestation.url}\n\n@LearnOpenClaw #AIAgents #Web3`;
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(ogImageUrl)}`, "_blank");
               }} className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-700">
                 Share on 𝕏
@@ -233,7 +233,9 @@ function CertificateContent() {
 
         {/* ACTIONS: Print & Email */}
         {isPaid && attestation && (
-          <div className="mb-6 flex flex-col sm:flex-row gap-3 justify-center no-print">
+          <div className="mb-6 text-center no-print">
+            <h1 className="text-2xl font-bold text-slate-100 mb-4">🎓 View Your Certificate</h1>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => window.print()}
               className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
@@ -259,6 +261,7 @@ function CertificateContent() {
             >
               📧 Email Yourself
             </button>
+            </div>
           </div>
         )}
 

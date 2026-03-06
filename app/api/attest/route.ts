@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create on-chain attestation
-    const credentialId = `OC-${Date.now().toString(36).toUpperCase()}`;
+    const credentialId = `Hatched OpenClaw Operator | OC-${Date.now().toString(36).toUpperCase()}`;
     const result = await createAttestation({
       name: name || session.metadata?.userName || "Anonymous",
       email: session.customer_email || session.metadata?.userEmail || "",
