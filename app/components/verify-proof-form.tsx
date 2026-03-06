@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { QUEST_VERIFICATIONS } from "@/lib/quest-verification";
+
 interface Props {
   questId: number;
   isCompleted: boolean;
@@ -7,6 +10,11 @@ interface Props {
 }
 
 export function QuestVerify({ questId, isCompleted, onComplete }: Props) {
+  const [input, setInput] = useState("");
+  const [feedback, setFeedback] = useState<{ valid: boolean; message: string } | null>(null);
+
+  const verification = QUEST_VERIFICATIONS[questId];
+
   if (isCompleted) {
     return (
       <div className="mt-6 rounded-lg border border-green-800 bg-green-950/30 p-4 text-center">
@@ -16,20 +24,70 @@ export function QuestVerify({ questId, isCompleted, onComplete }: Props) {
     );
   }
 
+  if (!verification) {
+    return (
+      <div className="mt-6 rounded-lg border border-slate-700 p-4">
+        <button
+          onClick={() => onComplete(questId)}
+          className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-slate-900 transition-colors hover:bg-cyan-400"
+        >
+          ✓ Mark as Complete
+        </button>
+      </div>
+    );
+  }
+
+  function handleVerify() {
+    if (!verification) return;
+    const result = verification.validate(input);
+    setFeedback(result);
+    if (result.valid) {
+      setTimeout(() => onComplete(questId), 1200);
+    }
+  }
+
   return (
-    <div className="mt-6 rounded-lg border border-slate-700 p-4">
-      <p className="mb-3 text-sm text-slate-300">
-        Finished all the steps above?
-      </p>
+    <div className="mt-6 rounded-lg border border-cyan-800/50 bg-cyan-950/20 p-5">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300 mb-1">
+        🧪 Verify Your Work
+      </h3>
+      <p className="text-sm text-slate-300">{verification.challenge}</p>
+      <p className="mt-1 text-xs text-slate-500">{verification.instruction}</p>
+
+      {verification.command && (
+        <pre className="mt-3 rounded bg-slate-900 border border-slate-700 px-3 py-2 text-sm text-green-400 overflow-x-auto whitespace-pre-wrap break-words">
+          <code>{verification.command}</code>
+        </pre>
+      )}
+
+      <textarea
+        value={input}
+        onChange={(e) => {
+          setInput(e.target.value);
+          setFeedback(null);
+        }}
+        placeholder={verification.placeholder}
+        rows={3}
+        className="mt-3 w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-cyan-500 focus:outline-none"
+      />
+
       <button
-        onClick={() => onComplete(questId)}
-        className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-slate-900 transition-colors hover:bg-cyan-400 active:bg-cyan-600"
+        onClick={handleVerify}
+        disabled={input.trim().length === 0}
+        className="mt-3 w-full rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-slate-900 transition-colors hover:bg-cyan-400 active:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-500"
       >
-        ✓ Mark Quest {questId} as Complete
+        ✓ Verify
       </button>
-      <p className="mt-2 text-center text-xs text-slate-500">
-        Be honest with yourself — the only person you&apos;re cheating is you! 😄
-      </p>
+
+      {feedback && (
+        <div className={`mt-3 rounded-lg p-3 text-sm ${
+          feedback.valid
+            ? "border border-green-800 bg-green-950/30 text-green-300"
+            : "border border-rose-800 bg-rose-950/30 text-rose-300"
+        }`}>
+          {feedback.valid ? "✅ " : "❌ "}{feedback.message}
+        </div>
+      )}
     </div>
   );
 }
