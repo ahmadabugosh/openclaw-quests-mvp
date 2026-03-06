@@ -57,20 +57,30 @@ export async function GET(_: Request, { params }: { params: Promise<{ username: 
 
           <div
             style={{
-              width: 280,
-              height: 280,
-              borderRadius: 999,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "radial-gradient(circle at 40% 20%, #ffffff 0%, #e2e8f0 40%, #0f172a 100%)",
-              color: "#020617",
-              fontWeight: 700,
-              fontSize: 22,
-              border: "6px solid rgba(255,255,255,0.7)",
+              flexDirection: "column",
+              gap: 8,
+              width: 320,
             }}
           >
-            {traits.baseColor}
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#67e8f9", marginBottom: 4 }}>Skills Completed</div>
+            {["Terminal & SSH", "VPS Management", "AI Model Config", "Chat Integration", "Agent Memory", "Task Automation", "Web Search", "Social APIs", "Skill Collector", "Security", "Dashboard Ops", "Full Deployment"].map((skill) => (
+              <div
+                key={skill}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 16,
+                  color: "#cbd5e1",
+                  background: "rgba(255,255,255,0.05)",
+                  borderRadius: 8,
+                  padding: "4px 10px",
+                }}
+              >
+                ✦ {skill}
+              </div>
+            ))}
           </div>
         </div>
       </div>

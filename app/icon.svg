@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="36" rx="22" ry="26" fill="#e8dcc8" stroke="#c4b89c" stroke-width="2"/>
+  <g stroke="#8b7355" stroke-width="1.5" fill="none">
+    <polyline points="32,12 31,18 33,22 30,28 32,32"/>
+    <polyline points="18,36 22,40 20,46"/>
+    <polyline points="46,34 42,38 44,44"/>
+  </g>
+</svg>

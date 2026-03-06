@@ -113,11 +113,17 @@ body {
 }
 
 @media print {
-  body { background: white !important; color: black !important; }
+  @page { size: A4 landscape; margin: 0.5cm; }
+  body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   nav, .no-print, button, a[href="/dashboard"] { display: none !important; }
-  .print-certificate { border-color: #d97706 !important; background: white !important; }
+  /* Hide everything except the certificate */
+  main > div > .mb-6, main > div > .mb-8 { display: none !important; }
+  main > div > .no-print { display: none !important; }
+  .print-certificate { border-color: #d97706 !important; background: white !important; break-inside: avoid; page-break-inside: avoid; }
   .print-certificate * { color: #1a1a2e !important; }
   .print-certificate .text-amber-300, .print-certificate .text-amber-400, .print-certificate .text-amber-400\/60, .print-certificate .text-amber-400\/80 { color: #d97706 !important; }
   .print-certificate .text-green-400 { color: #16a34a !important; }
   .print-certificate .text-cyan-400, .print-certificate .text-cyan-500 { color: #0891b2 !important; }
+  /* Hide top bar with back link and edit name */
+  main > div > .mb-6.flex { display: none !important; }
 }

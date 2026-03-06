@@ -213,7 +213,7 @@ function CertificateContent() {
             <p className="text-xs uppercase tracking-widest text-green-400 mb-2">✅ Verified On-Chain (Base)</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a href={attestation.url} target="_blank" rel="noreferrer" className="rounded-lg bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-500">
-                🔗 Verify Credential On-Chain
+                🔗 Proof of Certification
               </a>
               <button onClick={() => {
                 const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nVerify: ${attestation.url}\n\n@OpenClaw #AIAgents #Web3`;
@@ -228,6 +228,37 @@ function CertificateContent() {
                 Share on LinkedIn
               </button>
             </div>
+          </div>
+        )}
+
+        {/* ACTIONS: Print & Email */}
+        {isPaid && attestation && (
+          <div className="mb-6 flex flex-col sm:flex-row gap-3 justify-center no-print">
+            <button
+              onClick={() => window.print()}
+              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+            >
+              📄 Save as PDF
+            </button>
+            <button
+              onClick={async () => {
+                const email = localStorage.getItem("openclaw-quests-email");
+                if (!email) { setError("No email found. Please log in again."); return; }
+                try {
+                  const res = await fetch("/api/certificate/email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, name: userName, date: hatchDate, questsCompleted: completedCount, attestationUid: attestation?.uid, attestationUrl: attestation?.url }),
+                  });
+                  const data = await res.json();
+                  if (data.ok) { setError(""); alert("Certificate sent to " + email + "!"); }
+                  else { setError(data.error || "Failed to send email"); }
+                } catch { setError("Network error sending email."); }
+              }}
+              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+            >
+              📧 Email Yourself
+            </button>
           </div>
         )}
 
@@ -347,37 +378,6 @@ function CertificateContent() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* ACTIONS: Print & Email */}
-        {isPaid && attestation && (
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => window.print()}
-              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
-            >
-              🖨️ Print / Save as PDF
-            </button>
-            <button
-              onClick={async () => {
-                const email = localStorage.getItem("openclaw-quests-email");
-                if (!email) { setError("No email found. Please log in again."); return; }
-                try {
-                  const res = await fetch("/api/certificate/email", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, name: userName, date: hatchDate, questsCompleted: completedCount, attestationUid: attestation?.uid, attestationUrl: attestation?.url }),
-                  });
-                  const data = await res.json();
-                  if (data.ok) { setError(""); alert("Certificate sent to " + email + "!"); }
-                  else { setError(data.error || "Failed to send email"); }
-                } catch { setError("Network error sending email."); }
-              }}
-              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
-            >
-              📧 Email Yourself
-            </button>
           </div>
         )}
 
