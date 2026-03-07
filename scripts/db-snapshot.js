@@ -4,6 +4,11 @@ const dbPath = process.env.QUESTS_DB_PATH || '/data/quests.db';
 const db = new Database(dbPath, { readonly: true });
 
 console.log('\n=== DATABASE SNAPSHOT ===\n');
+console.log(`📁 DB Path: ${dbPath}`);
+
+// Check tables
+const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+console.log(`📋 Tables: ${tables.map(t => t.name).join(', ')}\n`);
 
 // User count
 const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
