@@ -48,19 +48,19 @@ export function AudioPlayer() {
   }
 
   return (
-    <div className="flex items-center gap-2 text-slate-400">
-      <audio ref={audioRef} src="/audio/background-music.mp3" loop />
+    <div className="flex items-center gap-3 text-slate-400 bg-slate-900/50 px-4 py-2 rounded-lg border border-slate-700/50">
+      <audio ref={audioRef} src="/audio/disney.mp3" loop />
       
       <button
         onClick={togglePlay}
-        className="hover:text-slate-300 transition-colors"
+        className="hover:text-slate-300 transition-colors text-lg"
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? "⏸" : "▶️"}
       </button>
 
-      <div className="flex items-center gap-1">
-        <span className="text-xs">🔊</span>
+      <div className="flex items-center gap-2">
+        <span className="text-sm">🔊</span>
         <input
           type="range"
           min="0"
@@ -68,9 +68,10 @@ export function AudioPlayer() {
           step="0.01"
           value={volume}
           onChange={handleVolumeChange}
-          className="w-16 h-1 accent-cyan-500"
+          className="w-32 h-2 accent-cyan-500"
           aria-label="Volume"
         />
+        <span className="text-xs text-slate-600">{Math.round(volume * 100)}%</span>
       </div>
     </div>
   );
