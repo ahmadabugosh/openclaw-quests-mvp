@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { recordAnalyticsEvent, type AnalyticsEventType } from "@/lib/analytics";
-import { serverDb } from "@/lib/server-db";
+import { recordAnalyticsEvent, type AnalyticsEventType } from "@/lib/analytics-pg";
 
 const ALLOWED_TYPES: AnalyticsEventType[] = [
   "page_view",
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid analytics event type" }, { status: 400 });
     }
 
-    recordAnalyticsEvent(serverDb, body.type, {
+    await recordAnalyticsEvent(body.type, {
       path: body.path,
       questId: body.questId,
       userId: body.userId,

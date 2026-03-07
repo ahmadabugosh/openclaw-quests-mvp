@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { getCompletionFunnel, getPageViewCounts } from "@/lib/analytics";
-import { serverDb } from "@/lib/server-db";
+import { getCompletionFunnel, getPageViewCounts } from "@/lib/analytics-pg";
 
 export async function GET() {
+  const [pageViews, funnel] = await Promise.all([
+    getPageViewCounts(),
+    getCompletionFunnel()
+  ]);
+
   return NextResponse.json({
     ok: true,
-    pageViews: getPageViewCounts(serverDb),
-    funnel: getCompletionFunnel(serverDb),
+    pageViews,
+    funnel,
   });
 }

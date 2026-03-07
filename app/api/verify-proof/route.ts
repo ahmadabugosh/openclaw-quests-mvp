@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { decodeProofCode, verifyProofSignature } from "@/lib/proof";
 import { evaluateQuestCompletion } from "@/lib/verification";
-import { recordAnalyticsEvent } from "@/lib/analytics";
-import { serverDb } from "@/lib/server-db";
+import { recordAnalyticsEvent } from "@/lib/analytics-pg";
 
 // MVP placeholder: replace with DB-backed instance secret lookup.
 const INSTANCE_SECRETS: Record<string, string> = {
@@ -31,9 +30,9 @@ export async function POST(request: Request) {
 
     const progress = evaluateQuestCompletion(payload.checks);
 
-    recordAnalyticsEvent(serverDb, "proof_submitted", { userId: undefined });
+    await recordAnalyticsEvent("proof_submitted", { userId: undefined });
     for (const questId of progress.completedQuestIds) {
-      recordAnalyticsEvent(serverDb, "quest_completed", { questId });
+      await recordAnalyticsEvent("quest_completed", { questId });
     }
 
     return NextResponse.json({

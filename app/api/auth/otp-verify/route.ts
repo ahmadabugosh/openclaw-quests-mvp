@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyOTP } from "@/lib/otp";
-import { serverDb } from "@/lib/server-db";
-import { createSession } from "@/lib/auth-db";
+import { getUserByEmail, createSession } from "@/lib/auth-pg";
+import { pool } from "@/lib/postgres-db";
 import { createHash, randomBytes } from "node:crypto";
 
 export async function POST(req: NextRequest) {
@@ -20,9 +20,7 @@ export async function POST(req: NextRequest) {
     const emailLower = email.toLowerCase();
 
     // Find or create user
-    let user = serverDb
-      .prepare("SELECT id, email, username FROM users WHERE email = ?")
-      .get(emailLower) as { id: number; email: string; username: string } | undefined;
+    let user = await getUserByEmail(emailLower);
 
     if (!user) {
       // Create user with a generated username
@@ -30,20 +28,17 @@ export async function POST(req: NextRequest) {
       const instanceId = randomBytes(12).toString("hex");
       const instanceSecretHash = createHash("sha256").update(randomBytes(24)).digest("hex");
 
-      serverDb
-        .prepare(
-          `INSERT INTO users (email, username, instance_id, instance_secret_hash)
-           VALUES (?, ?, ?, ?)`
-        )
-        .run(emailLower, username, instanceId, instanceSecretHash);
+      const result = await pool.query(
+        `INSERT INTO users (email, username, instance_id, instance_secret_hash)
+         VALUES ($1, $2, $3, $4) RETURNING id`,
+        [emailLower, username, instanceId, instanceSecretHash]
+      );
 
-      user = serverDb
-        .prepare("SELECT id, email, username FROM users WHERE email = ?")
-        .get(emailLower) as { id: number; email: string; username: string };
+      user = await getUserByEmail(emailLower);
     }
 
     // Create session
-    const session = createSession(serverDb, user!.id);
+    const session = await createSession(user!.id);
 
     const response = NextResponse.json({ success: true });
 
