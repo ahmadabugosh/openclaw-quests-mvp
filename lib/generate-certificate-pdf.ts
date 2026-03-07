@@ -107,7 +107,7 @@ export function generateCertificatePdf(data: CertificateData): string {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(252, 211, 77);
-  doc.text("\uD83E\uDD9E OpenClaw Operator", w / 2, y, { align: "center" });
+  doc.text("OpenClaw Operator", w / 2, y, { align: "center" });
 
   // Skills grid
   y += 16;
@@ -128,7 +128,7 @@ export function generateCertificatePdf(data: CertificateData): string {
     const row = Math.floor(i / cols);
     const x = gridStartX + col * cellW + cellW / 2;
     const sy = y + row * cellH;
-    doc.text(`✦ ${skill}`, x, sy, { align: "center" });
+    doc.text(`- ${skill}`, x, sy, { align: "center" });
   });
 
   // Footer info
@@ -152,9 +152,9 @@ export function generateCertificatePdf(data: CertificateData): string {
   doc.setTextColor(140, 140, 160);
   doc.text("CREDENTIAL", w / 2 + 60, footerY, { align: "center" });
   doc.setTextColor(22, 163, 74);
-  doc.text("Verified On-Chain ✓", w / 2 + 60, footerY + 5, { align: "center" });
+  doc.text("Verified On-Chain", w / 2 + 60, footerY + 5, { align: "center" });
 
-  // Attestation UID
+  // Attestation UID + link
   if (data.attestationUid) {
     y = footerY + 14;
     doc.setFontSize(7);
@@ -163,6 +163,18 @@ export function generateCertificatePdf(data: CertificateData): string {
     doc.setTextColor(8, 145, 178);
     const shortUid = `${data.attestationUid.slice(0, 10)}...${data.attestationUid.slice(-8)}`;
     doc.text(`ID: ${shortUid}`, w / 2, y + 4, { align: "center" });
+
+    if (data.attestationUrl) {
+      const linkText = "View attestation on Base";
+      doc.setTextColor(8, 145, 178);
+      doc.text(linkText, w / 2, y + 9, { align: "center" });
+      const linkWidth = doc.getTextWidth(linkText);
+      doc.link(w / 2 - linkWidth / 2, y + 6, linkWidth, 5, { url: data.attestationUrl });
+      // Underline
+      doc.setDrawColor(8, 145, 178);
+      doc.setLineWidth(0.2);
+      doc.line(w / 2 - linkWidth / 2, y + 9.5, w / 2 + linkWidth / 2, y + 9.5);
+    }
   }
 
   // Bottom tagline

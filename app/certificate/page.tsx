@@ -266,12 +266,12 @@ function CertificateContent() {
                 doc.text("OpenClaw Operator", w / 2, y, { align: "center" });
                 y += 16; const skills = ["Terminal & SSH", "VPS Management", "AI Model Config", "OpenClaw Deployment", "Chat Integration", "Agent Memory", "Task Automation", "Web Search & Skills", "Social Media APIs", "Server Security", "Dashboard Ops", "Full Deployment"];
                 doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(160, 160, 180);
-                skills.forEach((skill, i) => { const col = i % 4; const row = Math.floor(i / 4); doc.text(`✦ ${skill}`, w / 2 - 75 + col * 50, y + row * 6, { align: "center" }); });
+                skills.forEach((skill, i) => { const col = i % 4; const row = Math.floor(i / 4); doc.text(`- ${skill}`, w / 2 - 75 + col * 50, y + row * 6, { align: "center" }); });
                 y += 26; doc.setFontSize(8); doc.setTextColor(140, 140, 160);
                 doc.text("DATE ISSUED", w / 2 - 60, y, { align: "center" }); doc.setTextColor(200, 200, 220); doc.text(hatchDate, w / 2 - 60, y + 5, { align: "center" });
                 doc.setTextColor(140, 140, 160); doc.text("QUESTS COMPLETED", w / 2, y, { align: "center" }); doc.setTextColor(200, 200, 220); doc.text(`${completedCount} / 12`, w / 2, y + 5, { align: "center" });
                 doc.setTextColor(140, 140, 160); doc.text("CREDENTIAL", w / 2 + 60, y, { align: "center" }); doc.setTextColor(22, 163, 74); doc.text("Verified On-Chain", w / 2 + 60, y + 5, { align: "center" });
-                if (attestation) { doc.setFontSize(7); doc.setTextColor(8, 145, 178); doc.text(`ID: ${attestation.uid.slice(0, 10)}...${attestation.uid.slice(-8)}`, w / 2, y + 14, { align: "center" }); }
+                if (attestation) { doc.setFontSize(7); doc.setTextColor(8, 145, 178); doc.text(`ID: ${attestation.uid.slice(0, 10)}...${attestation.uid.slice(-8)}`, w / 2, y + 14, { align: "center" }); const lnk = "View attestation on Base"; doc.text(lnk, w / 2, y + 19, { align: "center" }); const lw = doc.getTextWidth(lnk); doc.link(w / 2 - lw / 2, y + 16, lw, 5, { url: attestation.url }); doc.setDrawColor(8, 145, 178); doc.setLineWidth(0.2); doc.line(w / 2 - lw / 2, y + 19.5, w / 2 + lw / 2, y + 19.5); }
                 doc.setFontSize(7); doc.setTextColor(100, 100, 120); doc.setFont("helvetica", "italic");
                 doc.text('"From egg to operator — one quest at a time."', w / 2, h - 20, { align: "center" });
                 doc.setFont("helvetica", "normal"); doc.setTextColor(80, 80, 100);
