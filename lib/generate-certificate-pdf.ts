@@ -46,11 +46,11 @@ export function generateCertificatePdf(data: CertificateData): string {
 
   let y = 35;
 
-  // "OpenClaw Academy" header
+  // "Learn OpenClaw" header
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(217, 119, 6);
-  doc.text("O P E N C L A W   A C A D E M Y", w / 2, y, { align: "center" });
+  doc.text("L E A R N   O P E N C L A W", w / 2, y, { align: "center" });
 
   // Divider
   y += 5;

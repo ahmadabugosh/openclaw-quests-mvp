@@ -247,7 +247,7 @@ function CertificateContent() {
                 doc.setLineWidth(0.5); doc.rect(14, 14, w - 28, h - 28);
                 let y = 35;
                 doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(217, 119, 6);
-                doc.text("O P E N C L A W   A C A D E M Y", w / 2, y, { align: "center" });
+                doc.text("L E A R N   O P E N C L A W", w / 2, y, { align: "center" });
                 y += 5; doc.setLineWidth(0.3); doc.line(w / 2 - 30, y, w / 2 + 30, y);
                 y += 12; doc.setFontSize(11);
                 doc.text("C E R T I F I C A T E   O F   C O M P L E T I O N", w / 2, y, { align: "center" });
@@ -281,6 +281,25 @@ function CertificateContent() {
               className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
             >
               📄 Download PDF
+            </button>
+            <button
+              onClick={async () => {
+                const email = localStorage.getItem("openclaw-quests-email");
+                if (!email) { setError("No email found. Please log in again."); return; }
+                try {
+                  const res = await fetch("/api/certificate/email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, name: userName, date: hatchDate, questsCompleted: completedCount, attestationUid: attestation?.uid, attestationUrl: attestation?.url }),
+                  });
+                  const data = await res.json();
+                  if (data.ok) { setError(""); alert("Certificate sent to " + email + "!"); }
+                  else { setError(data.error || "Failed to send email"); }
+                } catch { setError("Network error sending email."); }
+              }}
+              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+            >
+              📧 Email Yourself
             </button>
             </div>
           </div>
@@ -339,7 +358,7 @@ function CertificateContent() {
                   </svg>
                 </div>
 
-                <p className="text-xs uppercase tracking-[0.4em] text-amber-400/60">OpenClaw Academy</p>
+                <p className="text-xs uppercase tracking-[0.4em] text-amber-400/60">Learn OpenClaw</p>
                 <div className="mt-1 h-px w-32 mx-auto bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
 
                 <h1 className="mt-6 text-sm uppercase tracking-[0.3em] text-amber-400/80">Certificate of Completion</h1>
