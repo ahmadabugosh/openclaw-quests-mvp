@@ -113,8 +113,62 @@ function DashboardContent() {
     }).catch(() => {});
   }
 
+  function playCrackSound() {
+    try {
+      const ctx = new AudioContext();
+      // Crack sound: short noise burst
+      const bufferLen = ctx.sampleRate * 0.15;
+      const buffer = ctx.createBuffer(1, bufferLen, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferLen; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferLen, 3);
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 800;
+      filter.Q.value = 2;
+      src.connect(filter).connect(ctx.destination);
+      src.start();
+      // Second crack
+      setTimeout(() => {
+        const src2 = ctx.createBufferSource();
+        src2.buffer = buffer;
+        const f2 = ctx.createBiquadFilter();
+        f2.type = "bandpass";
+        f2.frequency.value = 1200;
+        f2.Q.value = 3;
+        src2.connect(f2).connect(ctx.destination);
+        src2.start();
+      }, 200);
+    } catch {}
+  }
+
+  function playCelebrationSound() {
+    try {
+      const ctx = new AudioContext();
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.15);
+        osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+      });
+    } catch {}
+  }
+
   function handleHatch() {
-    setShowCelebration(true);
+    playCrackSound();
+    setTimeout(() => {
+      playCelebrationSound();
+      setShowCelebration(true);
+    }, 600);
     setHasHatched(true);
     localStorage.setItem("openclaw-quests-hatched", "true");
     // Save to server
@@ -323,6 +377,25 @@ function DashboardContent() {
             onComplete={handleComplete}
             onUncomplete={handleUncomplete}
           />
+
+          {/* Bottom hatch button */}
+          {canHatch && (
+            <button
+              onClick={handleHatch}
+              className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-500 via-red-500 to-amber-500 px-4 py-4 text-lg font-black text-white shadow-lg shadow-amber-500/20 transition-transform hover:scale-105 active:scale-95 animate-pulse"
+            >
+              🦞 Hatch Your Lobster! 🦞
+            </button>
+          )}
+
+          {hasHatched && (
+            <a
+              href="/certificate"
+              className="mt-6 block w-full rounded-xl border-2 border-amber-500/50 px-4 py-3 text-center font-bold text-amber-400 transition-colors hover:bg-amber-500/10"
+            >
+              🏆 View Certificate
+            </a>
+          )}
         </section>
       </div>
     </main>

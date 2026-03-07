@@ -70,9 +70,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </ul>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href={getBadgePagePath(username)} className="inline-block rounded-md border border-cyan-300 px-4 py-2 font-semibold text-cyan-200">
-              View share badge
-            </a>
             <a href="/" className="inline-block rounded-md bg-cyan-400 px-4 py-2 font-semibold text-slate-900">
               Hatch your own 🥚 → Learn OpenClaw
             </a>
