@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const BASE_RPC = "https://mainnet.base.org";
 const RECEIVING_WALLET = "0xd7aca290774a6def1Fc7C50C185B4e4107988aBc";
-const REQUIRED_AMOUNT = 20_000_000; // 20 USDC (6 decimals)
+const REQUIRED_AMOUNT = 10_000; // 0.01 USDC (6 decimals) - TEST PRICE, change to 20_000_000 before launch
 
 const ERC20_ABI = [
   "event Transfer(address indexed from, address indexed to, uint256 value)",
