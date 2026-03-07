@@ -9,7 +9,7 @@ import { base } from "wagmi/chains";
 // USDC on Base
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as Address;
 const RECIPIENT = "0xd7aca290774a6def1Fc7C50C185B4e4107988aBc" as Address;
-const AMOUNT = parseUnits("20", 6); // 20 USDC (6 decimals)
+const AMOUNT = parseUnits("0.01", 6); // TEST PRICE - change back to 20 before launch
 
 // ERC20 transfer ABI
 const ERC20_ABI = [
@@ -89,8 +89,8 @@ export function WalletPayModal({ onClose, onSuccess }: Props) {
 
         <div className="space-y-4">
           <div className="rounded-lg border border-blue-800 bg-blue-950/30 p-4 text-center">
-            <p className="text-2xl font-bold text-slate-100">20 USDC</p>
-            <p className="text-sm text-slate-400 mt-1">on Base network</p>
+            <p className="text-2xl font-bold text-slate-100">0.01 USDC</p>
+            <p className="text-sm text-slate-400 mt-1">on Base network (test price)</p>
           </div>
 
           {!isConnected ? (
@@ -135,7 +135,7 @@ export function WalletPayModal({ onClose, onSuccess }: Props) {
                 disabled={isSending}
                 className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white disabled:bg-slate-700 disabled:text-slate-500 hover:bg-blue-500 transition-colors"
               >
-                {isSending ? "Confirm in wallet..." : "Pay 20 USDC"}
+                {isSending ? "Confirm in wallet..." : "Pay 0.01 USDC"}
               </button>
             </div>
           )}
