@@ -81,6 +81,11 @@ export const QUESTS: Quest[] = [
         tip: "When typing your password, nothing will appear on screen — that's normal! Just type it and press Enter.",
       },
       {
+        title: "Copy and paste your root password",
+        description: "It's better to copy and paste with your mouse/cursor (by right clicking) instead of your keyboard. Click paste with your mouse/cursor (by right clicking). Note: when you paste your password in the terminal it will look blank (you won't see anything being copied). Just make sure you paste it next to where it asks for the password and press enter.",
+        tip: "The terminal hides password characters for security — even when pasting! This is normal behavior. Just paste and press Enter even though you see nothing.",
+      },
+      {
         title: "You're in!",
         description: "If you see a new prompt (usually ending in # or $), you're now controlling your remote server. Run this to confirm:",
         command: "hostname && uname -a",
