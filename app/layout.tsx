@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Provider } from "@/app/components/web3-provider";
+import { AudioPlayer } from "@/app/components/audio-player";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,13 +56,16 @@ export default function RootLayout({
         <Web3Provider>
         {children}
         </Web3Provider>
-        <footer className="no-print border-t border-slate-800 bg-slate-950 py-6 text-center text-sm text-slate-500">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-            <a href="https://learnopenclaw.ai" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">LearnOpenClaw.ai</a>
-            <span className="hidden sm:inline">•</span>
-            <a href="https://x.com/LearnOpenClaw" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">Follow us on 𝕏</a>
-            <span className="hidden sm:inline">•</span>
-            <span>Built by <a href="https://x.com/aabugosh" target="_blank" rel="noreferrer" className="text-amber-400/70 hover:text-amber-300 transition-colors">@aabugosh</a></span>
+        <footer className="no-print border-t border-slate-800 bg-slate-950 py-6 text-sm text-slate-500">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <a href="https://learnopenclaw.ai" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">LearnOpenClaw.ai</a>
+              <span className="hidden sm:inline">•</span>
+              <a href="https://x.com/LearnOpenClaw" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">Follow us on 𝕏</a>
+              <span className="hidden sm:inline">•</span>
+              <span>Built by <a href="https://x.com/aabugosh" target="_blank" rel="noreferrer" className="text-amber-400/70 hover:text-amber-300 transition-colors">@aabugosh</a></span>
+            </div>
+            <AudioPlayer />
           </div>
         </footer>
       </body>

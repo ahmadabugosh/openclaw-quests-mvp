@@ -150,7 +150,7 @@ export const QUESTS: Quest[] = [
     guide: [
       {
         title: "SSH into your server (if not already connected)",
-        description: "Open your terminal and connect to your VPS, just like in Quest 2.",
+        description: "Open your terminal and connect to your VPS, just like in Quest 2. Remember to copy and paste your root password using right-click — the password will appear blank when you paste it.",
         command: "ssh root@YOUR_SERVER_IP",
       },
       {
@@ -190,18 +190,23 @@ export const QUESTS: Quest[] = [
     summary: "Link your Telegram bot and start the gateway. Your agent comes alive!",
     videoUrl: "",
     blogUrl: "https://resources.learnopenclaw.ai/teach-it-to-talk",
-    steps: ["Approve the pairing", "Start the gateway", "See it come online"],
+    steps: ["Start the gateway", "Get your pairing code", "Approve the pairing", "See it come online"],
     guide: [
-      {
-        title: "Approve the Telegram pairing",
-        description: "OpenClaw uses a pairing code to securely connect to your Telegram bot. Run this command on your server, replacing YOURPAIRINGCODE with the code shown during installation:",
-        command: "openclaw pairing approve telegram YOURPAIRINGCODE",
-        tip: "If you missed the pairing code, run 'openclaw pairing list' to see pending pairings.",
-      },
       {
         title: "Start the OpenClaw gateway",
         description: "The gateway is what keeps your agent running and connected to Telegram. Start it with:",
         command: "openclaw gateway start",
+      },
+      {
+        title: "Check Telegram for your pairing code",
+        description: "Once the gateway starts, OpenClaw will send you a message on Telegram with a pairing code. Open Telegram and look for a message from your bot with the code.",
+        tip: "If you don't see the message, check that your bot token is correct and that you've started a chat with your bot by searching for its username.",
+      },
+      {
+        title: "Approve the Telegram pairing",
+        description: "Go back to your server terminal and run this command, replacing YOURPAIRINGCODE with the code you received on Telegram:",
+        command: "openclaw pairing approve telegram YOURPAIRINGCODE",
+        tip: "If you missed the pairing code, run 'openclaw pairing list' to see pending pairings.",
       },
       {
         title: "Check that it's running",
