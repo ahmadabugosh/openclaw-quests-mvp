@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Web3Provider } from "@/app/components/web3-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,7 +52,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Web3Provider>
         {children}
+        </Web3Provider>
         <footer className="no-print border-t border-slate-800 bg-slate-950 py-6 text-center text-sm text-slate-500">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
             <a href="https://learnopenclaw.ai" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">LearnOpenClaw.ai</a>

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { WalletPayModal } from "@/app/components/wallet-pay-modal";
 
 const STORAGE_KEY = "openclaw-quests-completed";
 const NAME_KEY = "openclaw-quests-name";
@@ -19,6 +20,7 @@ function CertificateContent() {
   const [attestation, setAttestation] = useState<{ uid: string; url: string } | null>(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [showCryptoModal, setShowCryptoModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [txHash, setTxHash] = useState("");
   const [cryptoVerifying, setCryptoVerifying] = useState(false);
   const [showMintCelebration, setShowMintCelebration] = useState(false);
@@ -185,8 +187,8 @@ function CertificateContent() {
               <button onClick={handleStripePayment} disabled={paymentLoading} className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-4 font-bold text-slate-900 text-lg transition-transform hover:scale-105 disabled:opacity-50">
                 {paymentLoading ? "Loading..." : "💳 Pay $20 with Card"}
               </button>
-              <button onClick={() => setShowCryptoModal(true)} className="rounded-lg border-2 border-blue-500/50 bg-blue-950/20 px-8 py-4 font-bold text-blue-300 text-lg transition-transform hover:scale-105 hover:border-blue-400">
-                🔵 Pay 20 USDC on Base
+              <button onClick={() => setShowWalletModal(true)} className="rounded-lg border-2 border-blue-500/50 bg-blue-950/20 px-8 py-4 font-bold text-blue-300 text-lg transition-transform hover:scale-105 hover:border-blue-400">
+                🔵 Pay 20 USDC with Wallet
               </button>
             </div>
             <p className="mt-4 text-xs text-slate-600">
@@ -424,46 +426,33 @@ function CertificateContent() {
           </div>
         )}
 
-        {/* CRYPTO PAYMENT MODAL */}
-        {showCryptoModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-100">Pay with USDC on Base</h3>
-                <button onClick={() => { setShowCryptoModal(false); setError(""); }} className="text-slate-500 hover:text-slate-300 text-xl">✕</button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="rounded-lg border border-blue-800 bg-blue-950/30 p-4">
-                  <p className="text-sm text-blue-300 font-medium mb-2">Send exactly 20 USDC to:</p>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 rounded bg-slate-950 px-3 py-2 text-sm text-cyan-300 break-all">0xd7aca290774a6def1Fc7C50C185B4e4107988aBc</code>
-                    <button onClick={() => navigator.clipboard.writeText("0xd7aca290774a6def1Fc7C50C185B4e4107988aBc")} className="shrink-0 rounded bg-slate-800 px-2 py-2 text-xs text-slate-400 hover:text-slate-200">Copy</button>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-400">
-                  <p>⚠️ <strong className="text-slate-300">Important:</strong></p>
-                  <ul className="mt-1 space-y-1 text-xs">
-                    <li>• Network: <span className="text-cyan-300">Base</span> (not Ethereum mainnet)</li>
-                    <li>• Token: <span className="text-cyan-300">USDC</span> (not USDT or ETH)</li>
-                    <li>• Amount: <span className="text-cyan-300">20 USDC</span> exactly</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <label className="block text-sm text-slate-300 mb-1">Paste your transaction hash:</label>
-                  <input value={txHash} onChange={(e) => { setTxHash(e.target.value); setError(""); }} placeholder="0x..." className="w-full rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none" />
-                </div>
-
-                <button onClick={handleCryptoVerify} disabled={cryptoVerifying || !txHash.trim()} className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white disabled:bg-slate-700 disabled:text-slate-500">
-                  {cryptoVerifying ? "Verifying on Base..." : "Verify Payment"}
-                </button>
-
-                {error && <p className="text-sm text-rose-400 text-center">{error}</p>}
-              </div>
-            </div>
-          </div>
+        {/* WALLET PAYMENT MODAL */}
+        {showWalletModal && (
+          <WalletPayModal
+            onClose={() => setShowWalletModal(false)}
+            onSuccess={async (walletTxHash) => {
+              setShowWalletModal(false);
+              setIsPaid(true);
+              setPaymentMethod("crypto");
+              localStorage.setItem("openclaw-quests-paid", "true");
+              localStorage.setItem("openclaw-quests-payment-method", "crypto");
+              setTxHash(walletTxHash);
+              // Verify with backend
+              try {
+                const res = await fetch("/api/payment/verify-crypto", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ txHash: walletTxHash }),
+                });
+                if (!res.ok) {
+                  const data = await res.json();
+                  setError(data.error || "Payment verification failed");
+                }
+              } catch {
+                // Payment went through on-chain, verification is secondary
+              }
+            }}
+          />
         )}
       </div>
     </main>

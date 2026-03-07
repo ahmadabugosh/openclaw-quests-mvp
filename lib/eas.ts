@@ -37,7 +37,7 @@ export async function createAttestation(data: AttestationData): Promise<{ uid: s
 
     const encodedData = schemaEncoder.encodeData([
       { name: "name", value: data.name, type: "string" },
-      { name: "email", value: data.email, type: "string" },
+      { name: "email", value: "", type: "string" },
       { name: "completionDate", value: BigInt(data.completionDate), type: "uint64" },
       { name: "credentialId", value: data.credentialId, type: "string" },
       { name: "questsCompleted", value: BigInt(data.questsCompleted), type: "uint8" },
