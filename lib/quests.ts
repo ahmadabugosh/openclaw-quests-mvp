@@ -21,7 +21,7 @@ export const QUESTS: Quest[] = [
     id: 1,
     title: "Open the Terminal",
     summary: "Get your terminal ready. This is your command center for everything that follows.",
-    videoUrl: "",
+    videoUrl: "/videos/quest-1-terminal-setup.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/open-terminal",
     steps: ["Find or install a terminal", "Open it up", "Run your first command"],
     guide: [

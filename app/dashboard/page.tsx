@@ -245,12 +245,24 @@ function DashboardContent() {
           <h1 className="mt-2 text-3xl font-bold">{activeQuest.title}</h1>
           <p className="mt-2 text-slate-300">{activeQuest.summary}</p>
 
-          {/* Video placeholder */}
-          <div className="mt-6 aspect-video overflow-hidden rounded-lg border border-slate-700 bg-slate-800 grid place-items-center">
-            <div className="text-center text-slate-500">
-              <p className="text-4xl mb-2">🎬</p>
-              <p className="text-sm">Video tutorial coming soon</p>
-            </div>
+          {/* Video */}
+          <div className="mt-6 aspect-video overflow-hidden rounded-lg border border-slate-700 bg-slate-800">
+            {activeQuest.videoUrl ? (
+              <video
+                key={activeQuest.id}
+                src={activeQuest.videoUrl}
+                controls
+                playsInline
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <div className="h-full grid place-items-center">
+                <div className="text-center text-slate-500">
+                  <p className="text-4xl mb-2">🎬</p>
+                  <p className="text-sm">Video tutorial coming soon</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Step-by-step guide */}
