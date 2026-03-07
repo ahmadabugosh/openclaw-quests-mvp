@@ -27,49 +27,45 @@ function DashboardContent() {
     }
   }, []);
 
-  // Load from server first, fall back to localStorage
-  useEffect(() => {
-    async function loadProgress() {
-      try {
-        // Try server first
-        const res = await fetch("/api/quests/progress");
-        if (res.ok) {
-          const data = await res.json();
-          const ids = data.completedIds as number[];
-          setCompletedIds(new Set(ids));
-          if (data.hasHatched) setHasHatched(true);
-          if (data.email) setEmailVerified(true);
-          // Sync to localStorage as cache
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-          if (data.hasHatched) localStorage.setItem("openclaw-quests-hatched", "true");
-          if (data.email) localStorage.setItem("openclaw-quests-email", data.email);
-          const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
-          if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
-          return;
-        }
-      } catch {
-        // Server unavailable, fall back to localStorage
+  // Load progress from server, fall back to localStorage
+  async function loadProgress() {
+    try {
+      const res = await fetch("/api/quests/progress");
+      if (res.ok) {
+        const data = await res.json();
+        const ids = data.completedIds as number[];
+        setCompletedIds(new Set(ids));
+        if (data.hasHatched) setHasHatched(true);
+        if (data.email) setEmailVerified(true);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+        if (data.hasHatched) localStorage.setItem("openclaw-quests-hatched", "true");
+        if (data.email) localStorage.setItem("openclaw-quests-email", data.email);
+        const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
+        if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+        return;
       }
-
-      // Fallback to localStorage
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const ids = JSON.parse(saved) as number[];
-          setCompletedIds(new Set(ids));
-          const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
-          if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
-        }
-        const hatched = localStorage.getItem("openclaw-quests-hatched");
-        if (hatched) setHasHatched(true);
-        const savedEmail = localStorage.getItem("openclaw-quests-email");
-        if (savedEmail) setEmailVerified(true);
-      } catch {
-        // ignore
-      }
+    } catch {
+      // Server unavailable, fall back to localStorage
     }
-    loadProgress();
-  }, []);
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const ids = JSON.parse(saved) as number[];
+        setCompletedIds(new Set(ids));
+        const firstUncompleted = QUESTS.find((q) => !ids.includes(q.id));
+        if (firstUncompleted) setActiveQuestId(firstUncompleted.id);
+      }
+      const hatched = localStorage.getItem("openclaw-quests-hatched");
+      if (hatched) setHasHatched(true);
+      const savedEmail = localStorage.getItem("openclaw-quests-email");
+      if (savedEmail) setEmailVerified(true);
+    } catch {
+      // ignore
+    }
+  }
+
+  useEffect(() => { loadProgress(); }, []);
 
   // Save to localStorage on change
   useEffect(() => {
@@ -145,7 +141,7 @@ function DashboardContent() {
 
       {/* Email gate */}
       {!emailVerified && (
-        <EmailGate onVerified={() => setEmailVerified(true)} />
+        <EmailGate onVerified={() => { setEmailVerified(true); loadProgress(); }} />
       )}
 
       {/* Celebration overlay */}

@@ -66,6 +66,24 @@ export function EmailGate({ onVerified }: Props) {
       }
 
       localStorage.setItem("openclaw-quests-email", email);
+
+      // Sync any localStorage progress to server
+      try {
+        const saved = localStorage.getItem("openclaw-quests-completed");
+        if (saved) {
+          const ids = JSON.parse(saved) as number[];
+          for (const questId of ids) {
+            await fetch("/api/quests/progress", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ questId, action: "complete" }),
+            });
+          }
+        }
+      } catch {
+        // Non-critical
+      }
+
       onVerified(email);
     } catch {
       setError("Network error. Please try again.");
