@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { generateCertificatePdf } from "@/lib/generate-certificate-pdf";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,11 +14,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email service not configured" }, { status: 500 });
     }
 
-    // Send via Loops transactional email (or fallback to contact create + event)
+    // Generate PDF certificate
+    const pdfBase64 = generateCertificatePdf({
+      name,
+      date,
+      questsCompleted: Number(questsCompleted) || 12,
+      attestationUid: attestationUid || undefined,
+      attestationUrl: attestationUrl || undefined,
+    });
+
     const certificateTemplateId = process.env.LOOPS_CERTIFICATE_TEMPLATE_ID;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hatch.learnopenclaw.ai";
 
     if (certificateTemplateId) {
-      // Use dedicated certificate template
       const res = await fetch("https://app.loops.so/api/v1/transactional", {
         method: "POST",
         headers: {
@@ -33,32 +42,63 @@ export async function POST(req: NextRequest) {
             questsCompleted: String(questsCompleted),
             attestationUid: attestationUid || "",
             attestationUrl: attestationUrl || "",
-            certificateUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://carefree-cooperation-production-787e.up.railway.app"}/certificate`,
+            certificateUrl: `${siteUrl}/certificate`,
           },
+          attachments: [
+            {
+              filename: `OpenClaw-Certificate-${name.replace(/\s+/g, "-")}.pdf`,
+              contentType: "application/pdf",
+              data: pdfBase64,
+            },
+          ],
         }),
       });
 
       if (!res.ok) {
-        console.error("Loops certificate email failed:", await res.text());
-        return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+        const errorText = await res.text();
+        console.error("Loops certificate email failed:", errorText);
+
+        // If attachments aren't enabled, retry without attachment
+        if (errorText.includes("attachment")) {
+          console.log("Retrying without attachment...");
+          const retryRes = await fetch("https://app.loops.so/api/v1/transactional", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              transactionalId: certificateTemplateId,
+              email,
+              dataVariables: {
+                name,
+                date,
+                questsCompleted: String(questsCompleted),
+                attestationUid: attestationUid || "",
+                attestationUrl: attestationUrl || "",
+                certificateUrl: `${siteUrl}/certificate`,
+              },
+            }),
+          });
+          if (!retryRes.ok) {
+            console.error("Loops retry failed:", await retryRes.text());
+            return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+          }
+        } else {
+          return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+        }
       }
     } else {
-      // Fallback: send a simple HTML email via Loops events API
-      // First ensure contact exists
+      // Fallback: events API (no attachment support)
       await fetch("https://app.loops.so/api/v1/contacts/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          firstName: name,
-          source: "certificate-email",
-        }),
+        body: JSON.stringify({ email, firstName: name, source: "certificate-email" }),
       });
 
-      // Trigger event
       const res = await fetch("https://app.loops.so/api/v1/events/send", {
         method: "POST",
         headers: {
