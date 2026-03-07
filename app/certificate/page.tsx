@@ -225,7 +225,7 @@ function CertificateContent() {
                 Share on 𝕏
               </button>
               <button onClick={() => {
-                const linkedInText = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nI completed 12 hands-on quests and deployed my own AI agent. You can hatch your own for free at: https://hatch.learnopenclaw.ai\n\n#AI #Web3 #OpenClaw`;
+                const linkedInText = `🦞 I just earned my OpenClaw Operator credential, verified on-chain on Base!\n\nI completed 12 hands-on quests and deployed my own AI agent. You can hatch your own for free with @learn-openclaw at: https://hatch.learnopenclaw.ai`;
                 navigator.clipboard.writeText(linkedInText).then(() => {
                   alert("📋 Post text copied to clipboard! Paste it when LinkedIn opens.");
                   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;

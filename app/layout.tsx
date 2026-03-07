@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Provider } from "@/app/components/web3-provider";
 import { AudioPlayer } from "@/app/components/audio-player";
+import { DiscordHelp } from "@/app/components/discord-help";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,7 @@ export default function RootLayout({
         <Web3Provider>
         {children}
         </Web3Provider>
+        <DiscordHelp />
         <footer className="no-print border-t border-slate-800 bg-slate-950 py-6 text-sm text-slate-500">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
