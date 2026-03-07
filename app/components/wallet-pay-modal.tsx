@@ -27,11 +27,11 @@ const ERC20_ABI = [
 
 interface Props {
   onClose: () => void;
-  onSuccess: (txHash: string) => void;
+  onSuccess: (txHash: string, walletAddress: string) => void;
 }
 
 export function WalletPayModal({ onClose, onSuccess }: Props) {
-  const { isConnected, chain } = useAccount();
+  const { isConnected, chain, address } = useAccount();
   const [error, setError] = useState("");
   const [step, setStep] = useState<"connect" | "pay" | "confirming" | "verifying">("connect");
 
@@ -59,9 +59,9 @@ export function WalletPayModal({ onClose, onSuccess }: Props) {
   });
 
   // When confirmed on-chain, verify with our backend
-  if (isConfirmed && txHash && step === "confirming") {
+  if (isConfirmed && txHash && step === "confirming" && address) {
     setStep("verifying");
-    onSuccess(txHash);
+    onSuccess(txHash, address);
   }
 
   function handlePay() {

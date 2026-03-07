@@ -4,7 +4,7 @@ import { createAttestation, getAttestationUrl } from "@/lib/eas";
 
 export async function POST(req: NextRequest) {
   try {
-    const { sessionId, name, questsCompleted } = await req.json();
+    const { sessionId, name, questsCompleted, walletAddress } = await req.json();
 
     // Verify Stripe payment
     const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const credentialId = `Hatched OpenClaw Operator | OC-${Date.now().toString(36).toUpperCase()}`;
     const result = await createAttestation({
       name: name || session.metadata?.userName || "Anonymous",
-      email: session.customer_email || session.metadata?.userEmail || "",
+      email: walletAddress || "", // Store wallet address in email field if provided
       completionDate: Math.floor(Date.now() / 1000),
       credentialId,
       questsCompleted: questsCompleted || 12,

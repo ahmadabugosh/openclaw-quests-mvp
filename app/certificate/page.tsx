@@ -114,10 +114,11 @@ function CertificateContent() {
     setError("");
     try {
       const sessionId = localStorage.getItem("openclaw-quests-session-id") || searchParams.get("session_id") || "crypto-payment";
+      const walletAddress = localStorage.getItem("openclaw-quests-wallet-address") || "";
       const res = await fetch("/api/attest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, name: userName, questsCompleted: completedCount }),
+        body: JSON.stringify({ sessionId, name: userName, questsCompleted: completedCount, walletAddress }),
       });
       const data = await res.json();
       if (data.uid) {
@@ -430,12 +431,13 @@ function CertificateContent() {
         {showWalletModal && (
           <WalletPayModal
             onClose={() => setShowWalletModal(false)}
-            onSuccess={async (walletTxHash) => {
+            onSuccess={async (walletTxHash, walletAddress) => {
               setShowWalletModal(false);
               setIsPaid(true);
               setPaymentMethod("crypto");
               localStorage.setItem("openclaw-quests-paid", "true");
               localStorage.setItem("openclaw-quests-payment-method", "crypto");
+              localStorage.setItem("openclaw-quests-wallet-address", walletAddress);
               setTxHash(walletTxHash);
               // Verify with backend
               try {
