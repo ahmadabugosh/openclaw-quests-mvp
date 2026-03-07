@@ -1,24 +1,16 @@
 import { ImageResponse } from "next/og";
-import { generateCreature } from "@/lib/creature";
-import { buildBadgeSummary, formatHatchDate, getBadgeLevel } from "@/lib/badge";
 
 export const runtime = "edge";
 
 export async function GET(_: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  const completedCount = 10;
-  const hatchedAtIso = "2026-03-05T12:00:00Z";
-  const hatchDate = formatHatchDate(hatchedAtIso);
-  const level = getBadgeLevel(completedCount);
 
-  const traits = generateCreature({
-    channelType: "telegram",
-    firstCronType: "time-based",
-    soulTone: "cheerful",
-    seed: username,
-  });
-
-  const summary = buildBadgeSummary({ username, completedCount, hatchedAtIso });
+  const skills = [
+    "Terminal & SSH", "VPS Management", "AI Model Config",
+    "Chat Integration", "Agent Memory", "Task Automation",
+    "Web Search", "Social APIs", "Skill Collector",
+    "Security", "Dashboard Ops", "Full Deployment",
+  ];
 
   return new ImageResponse(
     (
@@ -46,48 +38,43 @@ export async function GET(_: Request, { params }: { params: Promise<{ username: 
             background: "rgba(2,6,23,0.45)",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 700 }}>
-            <div style={{ fontSize: 26, opacity: 0.9 }}>OpenClaw Quests</div>
-            <div style={{ fontSize: 54, fontWeight: 800 }}>🥚→🦞 Hatched!</div>
-            <div style={{ fontSize: 42, fontWeight: 700 }}>@{username}</div>
-            <div style={{ fontSize: 30, color: "#bae6fd" }}>{level}</div>
-            <div style={{ fontSize: 26 }}>Hatched on {hatchDate}</div>
-            <div style={{ fontSize: 20, opacity: 0.75 }}>{summary}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 650 }}>
+            <div style={{ fontSize: 24, opacity: 0.7, display: "flex" }}>Learn OpenClaw</div>
+            <div style={{ fontSize: 52, fontWeight: 800, display: "flex" }}>Hatched!</div>
+            <div style={{ fontSize: 40, fontWeight: 700, color: "#fbbf24", display: "flex" }}>@{username}</div>
+            <div style={{ fontSize: 28, color: "#67e8f9", display: "flex" }}>OpenClaw Operator</div>
+            <div style={{ fontSize: 20, opacity: 0.6, display: "flex" }}>12 / 12 quests completed</div>
           </div>
 
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 8,
+              gap: 6,
               width: 320,
             }}
           >
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#67e8f9", marginBottom: 4 }}>Skills Completed</div>
-            {["Terminal & SSH", "VPS Management", "AI Model Config", "Chat Integration", "Agent Memory", "Task Automation", "Web Search", "Social APIs", "Skill Collector", "Security", "Dashboard Ops", "Full Deployment"].map((skill) => (
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#67e8f9", marginBottom: 4, display: "flex" }}>Skills Earned</div>
+            {skills.map((skill) => (
               <div
                 key={skill}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
-                  fontSize: 16,
+                  fontSize: 15,
                   color: "#cbd5e1",
-                  background: "rgba(255,255,255,0.05)",
-                  borderRadius: 8,
-                  padding: "4px 10px",
+                  background: "rgba(255,255,255,0.06)",
+                  borderRadius: 6,
+                  padding: "3px 10px",
                 }}
               >
-                ✦ {skill}
+                - {skill}
               </div>
             ))}
           </div>
         </div>
       </div>
     ),
-    {
-      width: 1200,
-      height: 630,
-    },
+    { width: 1200, height: 630 },
   );
 }
