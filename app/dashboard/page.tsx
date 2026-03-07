@@ -163,11 +163,23 @@ function DashboardContent() {
     } catch {}
   }
 
+  function playLobsterAudio() {
+    try {
+      const audio = new Audio("/audio/lobster.wav");
+      audio.volume = 0.8;
+      audio.play().catch(() => {}); // Ignore autoplay errors
+    } catch {}
+  }
+
   function handleHatch() {
     playCrackSound();
     setTimeout(() => {
       playCelebrationSound();
       setShowCelebration(true);
+      // Play lobster audio after celebration sound
+      setTimeout(() => {
+        playLobsterAudio();
+      }, 1000);
     }, 600);
     setHasHatched(true);
     localStorage.setItem("openclaw-quests-hatched", "true");
