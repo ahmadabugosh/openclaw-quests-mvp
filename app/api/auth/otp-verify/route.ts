@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyOTP } from "@/lib/otp";
+import { serverDb } from "@/lib/server-db";
+import { createSession } from "@/lib/auth-db";
+import { createHash, randomBytes } from "node:crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,18 +17,57 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid or expired code. Please try again." }, { status: 400 });
     }
 
-    // Set a session cookie
+    const emailLower = email.toLowerCase();
+
+    // Find or create user
+    let user = serverDb
+      .prepare("SELECT id, email, username FROM users WHERE email = ?")
+      .get(emailLower) as { id: number; email: string; username: string } | undefined;
+
+    if (!user) {
+      // Create user with a generated username
+      const username = emailLower.split("@")[0] + "-" + randomBytes(3).toString("hex");
+      const instanceId = randomBytes(12).toString("hex");
+      const instanceSecretHash = createHash("sha256").update(randomBytes(24)).digest("hex");
+
+      serverDb
+        .prepare(
+          `INSERT INTO users (email, username, instance_id, instance_secret_hash)
+           VALUES (?, ?, ?, ?)`
+        )
+        .run(emailLower, username, instanceId, instanceSecretHash);
+
+      user = serverDb
+        .prepare("SELECT id, email, username FROM users WHERE email = ?")
+        .get(emailLower) as { id: number; email: string; username: string };
+    }
+
+    // Create session
+    const session = createSession(serverDb, user!.id);
+
     const response = NextResponse.json({ success: true });
-    response.cookies.set("quest_email", email.toLowerCase(), {
+
+    // Set proper session cookie
+    response.cookies.set("ocq_session", session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      maxAge: 60 * 60 * 24 * 14, // 14 days
+      path: "/",
+    });
+
+    // Also keep quest_email for backward compatibility
+    response.cookies.set("quest_email", emailLower, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
 
     return response;
-  } catch {
+  } catch (err) {
+    console.error("OTP verify error:", err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

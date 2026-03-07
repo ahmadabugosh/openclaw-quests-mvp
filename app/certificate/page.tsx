@@ -237,29 +237,50 @@ function CertificateContent() {
             <h1 className="text-2xl font-bold text-slate-100 mb-4">🎓 View Your Certificate</h1>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => window.print()}
-              className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
-            >
-              📄 Save as PDF
-            </button>
-            <button
               onClick={async () => {
-                const email = localStorage.getItem("openclaw-quests-email");
-                if (!email) { setError("No email found. Please log in again."); return; }
-                try {
-                  const res = await fetch("/api/certificate/email", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, name: userName, date: hatchDate, questsCompleted: completedCount, attestationUid: attestation?.uid, attestationUrl: attestation?.url }),
-                  });
-                  const data = await res.json();
-                  if (data.ok) { setError(""); alert("Certificate sent to " + email + "!"); }
-                  else { setError(data.error || "Failed to send email"); }
-                } catch { setError("Network error sending email."); }
+                const { jsPDF: JsPDF } = await import("jspdf");
+                const doc = new JsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+                const w = doc.internal.pageSize.getWidth();
+                const h = doc.internal.pageSize.getHeight();
+                doc.setFillColor(26, 26, 46); doc.rect(0, 0, w, h, "F");
+                doc.setDrawColor(217, 119, 6); doc.setLineWidth(2); doc.rect(8, 8, w - 16, h - 16);
+                doc.setLineWidth(0.5); doc.rect(14, 14, w - 28, h - 28);
+                let y = 35;
+                doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(217, 119, 6);
+                doc.text("O P E N C L A W   A C A D E M Y", w / 2, y, { align: "center" });
+                y += 5; doc.setLineWidth(0.3); doc.line(w / 2 - 30, y, w / 2 + 30, y);
+                y += 12; doc.setFontSize(11);
+                doc.text("C E R T I F I C A T E   O F   C O M P L E T I O N", w / 2, y, { align: "center" });
+                y += 14; doc.setFontSize(10); doc.setTextColor(160, 160, 180); doc.setFont("helvetica", "italic");
+                doc.text("This is to certify that", w / 2, y, { align: "center" });
+                y += 14; doc.setFont("times", "bold"); doc.setFontSize(36); doc.setTextColor(255, 220, 130);
+                doc.text(userName, w / 2, y, { align: "center" });
+                y += 5; doc.setDrawColor(217, 119, 6); doc.setLineWidth(0.3); doc.line(w / 2 - 50, y, w / 2 + 50, y);
+                y += 10; doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(180, 180, 200);
+                doc.text("has successfully completed the OpenClaw Quests Program and demonstrated", w / 2, y, { align: "center" });
+                doc.text("proficiency in AI agent deployment, automation, and operations.", w / 2, y + 5, { align: "center" });
+                doc.text("This individual has earned the title of:", w / 2, y + 10, { align: "center" });
+                y += 22; doc.setDrawColor(217, 119, 6); doc.setLineWidth(0.8); doc.setFillColor(40, 30, 20);
+                doc.roundedRect(w / 2 - 40, y - 8, 80, 14, 3, 3, "FD");
+                doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(252, 211, 77);
+                doc.text("OpenClaw Operator", w / 2, y, { align: "center" });
+                y += 16; const skills = ["Terminal & SSH", "VPS Management", "AI Model Config", "OpenClaw Deployment", "Chat Integration", "Agent Memory", "Task Automation", "Web Search & Skills", "Social Media APIs", "Server Security", "Dashboard Ops", "Full Deployment"];
+                doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(160, 160, 180);
+                skills.forEach((skill, i) => { const col = i % 4; const row = Math.floor(i / 4); doc.text(`✦ ${skill}`, w / 2 - 75 + col * 50, y + row * 6, { align: "center" }); });
+                y += 26; doc.setFontSize(8); doc.setTextColor(140, 140, 160);
+                doc.text("DATE ISSUED", w / 2 - 60, y, { align: "center" }); doc.setTextColor(200, 200, 220); doc.text(hatchDate, w / 2 - 60, y + 5, { align: "center" });
+                doc.setTextColor(140, 140, 160); doc.text("QUESTS COMPLETED", w / 2, y, { align: "center" }); doc.setTextColor(200, 200, 220); doc.text(`${completedCount} / 12`, w / 2, y + 5, { align: "center" });
+                doc.setTextColor(140, 140, 160); doc.text("CREDENTIAL", w / 2 + 60, y, { align: "center" }); doc.setTextColor(22, 163, 74); doc.text("Verified On-Chain", w / 2 + 60, y + 5, { align: "center" });
+                if (attestation) { doc.setFontSize(7); doc.setTextColor(8, 145, 178); doc.text(`ID: ${attestation.uid.slice(0, 10)}...${attestation.uid.slice(-8)}`, w / 2, y + 14, { align: "center" }); }
+                doc.setFontSize(7); doc.setTextColor(100, 100, 120); doc.setFont("helvetica", "italic");
+                doc.text('"From egg to operator — one quest at a time."', w / 2, h - 20, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.setTextColor(80, 80, 100);
+                doc.text("learnopenclaw.ai • Verified on Base via Ethereum Attestation Service", w / 2, h - 15, { align: "center" });
+                doc.save(`OpenClaw-Certificate-${userName.replace(/\s+/g, "-")}.pdf`);
               }}
               className="rounded-lg border border-slate-600 px-6 py-3 font-semibold text-slate-300 transition-colors hover:border-cyan-500 hover:text-cyan-300"
             >
-              📧 Email Yourself
+              📄 Download PDF
             </button>
             </div>
           </div>
