@@ -239,6 +239,16 @@ export const QUESTS: Quest[] = [
         description: "Start simple. Send 'Hey, who are you?' to your bot on Telegram. Your agent will respond based on its default personality.",
       },
       {
+        title: "Generate a profile picture for your bot",
+        description: "Give your AI agent a face! Use any free AI image generator to create a profile picture. Good options include DALL-E (via Bing Image Creator), Midjourney (if you have access), or Leonardo.ai (free tier).",
+        tip: "Prompt idea: 'A friendly AI robot assistant, professional profile picture style' or 'A cute lobster mascot, cartoon style'",
+      },
+      {
+        title: "Set your bot's profile picture on Telegram",
+        description: "Open Telegram and search for @BotFather. Send /mybots, select your bot, then tap 'Edit Bot' → 'Edit Botpic'. Upload the image you generated. Now your agent has a face!",
+        tip: "You can also change your bot's name and description here. Make it your own!",
+      },
+      {
         title: "Ask it to do something useful",
         description: "Try asking it to search the web, summarize something, or help with a task. Here are some ideas:",
         command: "# Try these messages:\n\"Search the web for the latest AI news today\"\n\"What's the weather in Dubai?\"\n\"Write me a haiku about coding\"",
@@ -260,6 +270,8 @@ export const QUESTS: Quest[] = [
       },
     ],
     helpLinks: [
+      { label: "Bing Image Creator (free DALL-E)", url: "https://www.bing.com/images/create" },
+      { label: "Leonardo.ai (free image generator)", url: "https://leonardo.ai/" },
       { label: "Prompt ideas for OpenClaw", url: "https://resources.learnopenclaw.ai/prompting-openclaw" },
       { label: "How sessions work", url: "https://docs.openclaw.ai/core/sessions" },
       { label: "Available tools reference", url: "https://docs.openclaw.ai/tools" },
