@@ -219,14 +219,21 @@ function CertificateContent() {
                 🔗 Proof of Certification
               </a>
               <button onClick={() => {
-                const text = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nVerify: ${attestation.url}\n\n@LearnOpenClaw #AIAgents #Web3`;
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(ogImageUrl)}`, "_blank");
+                const text = `🦞 I just earned my OpenClaw Operator credential, verified on-chain on Base!\n\nHatch Your Own with @LearnOpenClaw for Free at:\nhttps://hatch.learnopenclaw.ai`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
               }} className="rounded-lg bg-slate-800 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-700">
                 Share on 𝕏
               </button>
               <button onClick={() => {
-                const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-                window.open(linkedInUrl, "_blank");
+                const linkedInText = `🦞 I just earned my OpenClaw Operator credential — verified on-chain on Base!\n\nI completed 12 hands-on quests and deployed my own AI agent. You can hatch your own for free at: https://hatch.learnopenclaw.ai\n\n#AI #Web3 #OpenClaw`;
+                navigator.clipboard.writeText(linkedInText).then(() => {
+                  alert("📋 Post text copied to clipboard! Paste it when LinkedIn opens.");
+                  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                  window.open(linkedInUrl, "_blank");
+                }).catch(() => {
+                  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                  window.open(linkedInUrl, "_blank");
+                });
               }} className="rounded-lg bg-[#0A66C2] px-6 py-3 font-semibold text-white hover:bg-[#004182]">
                 Share on LinkedIn
               </button>
