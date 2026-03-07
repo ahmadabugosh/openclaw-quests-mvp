@@ -17,7 +17,30 @@ export function DiscordHelp() {
           </button>
           
           <div className="text-center">
-            <div className="text-6xl mb-3">🦞💬</div>
+            <div className="mb-3 flex justify-center">
+              <svg viewBox="0 0 100 100" className="w-20 h-20">
+                {/* Body */}
+                <ellipse cx="50" cy="55" rx="22" ry="25" fill="#ff6b6b" />
+                <ellipse cx="50" cy="60" rx="18" ry="15" fill="#ff4444" />
+                {/* Eyes */}
+                <circle cx="43" cy="45" r="6" fill="white" />
+                <circle cx="57" cy="45" r="6" fill="white" />
+                <circle cx="44" cy="44" r="3" fill="#1a1a2e" />
+                <circle cx="58" cy="44" r="3" fill="#1a1a2e" />
+                <circle cx="44.5" cy="43" r="1.5" fill="white" />
+                <circle cx="58.5" cy="43" r="1.5" fill="white" />
+                {/* Happy smile */}
+                <path d="M 45,54 Q 50,58 55,54" fill="none" stroke="#1a1a2e" strokeWidth="1.5" strokeLinecap="round" />
+                {/* Claws */}
+                <ellipse cx="30" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(-30,30,58)" />
+                <ellipse cx="70" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(30,70,58)" />
+                {/* Antennae */}
+                <line x1="43" y1="36" x2="35" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="57" y1="36" x2="65" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+                <circle cx="35" cy="25" r="2" fill="#ff4444" />
+                <circle cx="65" cy="25" r="2" fill="#ff4444" />
+              </svg>
+            </div>
             <h3 className="text-xl font-bold text-purple-300 mb-2">Need Help?</h3>
             <p className="text-sm text-slate-300 mb-4">
               Join our Discord community! Get support, share your projects, and connect with other OpenClaw operators.
