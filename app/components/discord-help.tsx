@@ -45,11 +45,39 @@ export function DiscordHelp() {
       ) : (
         <button
           onClick={() => setIsExpanded(true)}
-          className="group relative rounded-full bg-gradient-to-r from-purple-600 to-purple-500 p-4 shadow-lg shadow-purple-500/30 transition-all hover:scale-110 hover:shadow-xl hover:shadow-purple-500/40 active:scale-95"
+          className="group relative rounded-full bg-gradient-to-r from-purple-600 to-purple-500 p-3 shadow-lg shadow-purple-500/30 transition-all hover:scale-110 hover:shadow-xl hover:shadow-purple-500/40 active:scale-95"
         >
-          <div className="relative">
-            <span className="text-3xl">🦞</span>
-            <span className="absolute -top-1 -right-1 text-2xl animate-bounce">💬</span>
+          <div className="relative w-14 h-14">
+            {/* Baby lobster SVG */}
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              {/* Body */}
+              <ellipse cx="50" cy="55" rx="22" ry="25" fill="#ff6b6b" />
+              <ellipse cx="50" cy="60" rx="18" ry="15" fill="#ff4444" />
+              {/* Eyes */}
+              <circle cx="43" cy="45" r="6" fill="white" />
+              <circle cx="57" cy="45" r="6" fill="white" />
+              <circle cx="44" cy="44" r="3" fill="#1a1a2e" />
+              <circle cx="58" cy="44" r="3" fill="#1a1a2e" />
+              <circle cx="44.5" cy="43" r="1.5" fill="white" />
+              <circle cx="58.5" cy="43" r="1.5" fill="white" />
+              {/* Happy smile */}
+              <path d="M 45,54 Q 50,58 55,54" fill="none" stroke="#1a1a2e" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Claws */}
+              <ellipse cx="30" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(-30,30,58)" />
+              <ellipse cx="70" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(30,70,58)" />
+              {/* Antennae */}
+              <line x1="43" y1="36" x2="35" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="57" y1="36" x2="65" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="35" cy="25" r="2" fill="#ff4444" />
+              <circle cx="65" cy="25" r="2" fill="#ff4444" />
+            </svg>
+            
+            {/* Chat bubble */}
+            <div className="absolute -top-1 -right-1 bg-white rounded-full p-1.5 animate-bounce shadow-lg">
+              <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" />
+              </svg>
+            </div>
           </div>
           
           <div className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-slate-100 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
