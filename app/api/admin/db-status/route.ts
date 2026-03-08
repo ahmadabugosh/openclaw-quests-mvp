@@ -14,7 +14,7 @@ export async function GET() {
         ORDER BY table_name
       `);
       
-      const tables = tablesResult.rows.map(r => r.table_name);
+      const tables = tablesResult.rows.map((r: any) => r.table_name);
       
       // Get row counts
       const counts: Record<string, number> = {};
