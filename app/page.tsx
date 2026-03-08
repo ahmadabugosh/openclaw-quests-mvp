@@ -46,8 +46,17 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="egg-glow grid h-56 w-56 place-items-center rounded-full border border-cyan-300/40 bg-slate-900">
-          <div className="egg-float text-8xl">🥚</div>
+        <div className="egg-glow grid place-items-center rounded-3xl border border-cyan-300/40 bg-slate-900 p-4 max-w-md">
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="rounded-2xl w-full h-auto"
+          >
+            <source src="/videos/lobster.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
 
         <div className="flex flex-col gap-4 items-center">
