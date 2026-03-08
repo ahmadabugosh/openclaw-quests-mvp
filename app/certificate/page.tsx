@@ -28,11 +28,25 @@ function CertificateContent() {
 
   const fireConfetti = useCallback(async () => {
     try {
-      // Play celebration sound effect (lobster sound, slightly extended)
-      const audio = new Audio("/audio/lobster.wav");
-      audio.volume = 0.6;
-      audio.playbackRate = 0.85; // Slow it down slightly to make it feel longer
-      audio.play().catch(() => { /* autoplay blocked */ });
+      // Play simple celebration sound effect
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const playTone = (freq: number, startTime: number, duration: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = freq;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.3, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+      const now = audioContext.currentTime;
+      playTone(523, now, 0.15); // C5
+      playTone(659, now + 0.15, 0.15); // E5
+      playTone(784, now + 0.3, 0.25); // G5
+      playTone(1047, now + 0.5, 0.4); // C6 (higher, longer)
 
       // Fire confetti
       const confetti = (await import("canvas-confetti")).default;
