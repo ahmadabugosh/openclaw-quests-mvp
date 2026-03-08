@@ -61,6 +61,14 @@ function CertificateContent() {
     } catch { /* */ }
   }, []);
 
+  // Secret logout parameter
+  useEffect(() => {
+    if (searchParams.get("logout") === "true") {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -234,15 +242,7 @@ function CertificateContent() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <a href="/dashboard" className="text-sm text-cyan-400 underline">← Back to quests</a>
-          <div className="flex gap-2">
-            <button onClick={() => setIsEditing(true)} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-300">Edit name</button>
-            <button onClick={() => {
-              if (confirm("Log out? Your progress is saved on the server.")) {
-                localStorage.clear();
-                window.location.href = "/login";
-              }
-            }} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-slate-400 hover:text-cyan-300">Log out</button>
-          </div>
+          <button onClick={() => setIsEditing(true)} className="rounded-lg border border-slate-600 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-300">Edit name</button>
         </div>
 
         {/* ===== PAYMENT / MINT CTA — TOP ===== */}
