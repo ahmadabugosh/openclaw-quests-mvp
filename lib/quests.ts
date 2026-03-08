@@ -281,7 +281,7 @@ export const QUESTS: Quest[] = [
     id: 7,
     title: "Memory Lane",
     summary: "Give your agent long-term memory. Tell it about yourself so it remembers between sessions.",
-    videoUrl: "",
+    videoUrl: "/videos/quest7-identity-and-memory.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/memory-lane",
     steps: ["Tell your agent about yourself", "Ask it to update memory files", "Test recall"],
     guide: [
@@ -318,7 +318,7 @@ export const QUESTS: Quest[] = [
     id: 8,
     title: "The Automator",
     summary: "Set up your first scheduled task. Make your agent do useful things on autopilot!",
-    videoUrl: "",
+    videoUrl: "/videos/quest8-cron-jobs.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/the-automator",
     steps: ["Create a cron job", "Wait for it to run", "Verify it worked"],
     guide: [
