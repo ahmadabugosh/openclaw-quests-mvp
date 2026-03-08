@@ -235,7 +235,7 @@ export const QUESTS: Quest[] = [
     id: 6,
     title: "First Conversation",
     summary: "Have your first real conversation with your AI agent. Send at least 5 messages!",
-    videoUrl: "",
+    videoUrl: "/videos/quest6-first-conversation.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/first-conversation",
     steps: ["Say hello", "Try different prompts", "Explore its abilities"],
     guide: [
@@ -497,7 +497,7 @@ export const QUESTS: Quest[] = [
     id: 12,
     title: "Mission Control",
     summary: "Launch the OpenClaw dashboard and view it from your local machine. Your command center is ready!",
-    videoUrl: "",
+    videoUrl: "/videos/quest12-dashboard-complete.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/mission-control",
     steps: ["SSH into server", "Run dashboard command", "Copy tunnel command", "Open dashboard URL"],
     guide: [
