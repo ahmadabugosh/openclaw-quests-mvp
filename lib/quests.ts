@@ -144,7 +144,7 @@ export const QUESTS: Quest[] = [
     id: 4,
     title: "Incubate",
     summary: "Install OpenClaw on your VPS with one command. Then configure your AI model and Telegram bot.",
-    videoUrl: "",
+    videoUrl: "/videos/quest4-install-openclaw-v2.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/incubate",
     steps: ["Run the installer", "Set your model", "Add your Telegram token"],
     guide: [
