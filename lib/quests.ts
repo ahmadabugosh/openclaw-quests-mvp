@@ -56,7 +56,7 @@ export const QUESTS: Quest[] = [
     id: 2,
     title: "Give It a Home",
     summary: "Get a VPS (Virtual Private Server) and SSH into it. This is where your AI agent will live 24/7.",
-    videoUrl: "",
+    videoUrl: "/videos/quest-2-vps-setup.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/give-it-a-home",
     steps: ["Get a VPS", "Find your IP and password", "SSH in"],
     guide: [

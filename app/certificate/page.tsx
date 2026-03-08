@@ -185,7 +185,7 @@ function CertificateContent() {
         <div className="text-center">
           <p className="text-6xl mb-4">🥚</p>
           <h1 className="text-2xl font-bold">Not yet!</h1>
-          <p className="mt-2 text-slate-400">Complete at least 10 of 12 quests to earn your certificate.</p>
+          <p className="mt-2 text-slate-400">Complete at least 12 of 12 quests to earn your certificate.</p>
           <a href="/dashboard" className="mt-4 inline-block text-cyan-400 underline">← Back to quests</a>
         </div>
       </main>
