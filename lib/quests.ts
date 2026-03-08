@@ -104,7 +104,7 @@ export const QUESTS: Quest[] = [
     summary: "Get your API keys ready before installing OpenClaw. You'll need an AI brain and a chat channel.",
     videoUrl: "",
     blogUrl: "https://resources.learnopenclaw.ai/prep-the-scene",
-    steps: ["Get OpenRouter API key", "Create Telegram bot", "Save both for later"],
+    steps: ["Get OpenRouter API key", "Create Telegram bot", "Copy bot token", "Save both for later"],
     guide: [
       {
         title: "Create an OpenRouter account",
@@ -126,7 +126,12 @@ export const QUESTS: Quest[] = [
         title: "Create a Telegram bot with BotFather",
         description: "Open Telegram on your phone or desktop. Search for @BotFather and start a chat. Send /newbot and follow the prompts.",
         command: "/newbot",
-        tip: "BotFather asks for a display name (anything) and a username (must end in 'bot', e.g. MyClawBot). It then gives you a token like 123456:ABC-DEF... — copy this!",
+        tip: "BotFather asks for a display name (anything) and a username (must end in 'bot', e.g. MyClawBot).",
+      },
+      {
+        title: "Copy your Telegram bot token",
+        description: "After you create your bot, BotFather sends you a message with your bot token. It looks like this:\n\n123456789:ABCdefGHIjklMNOpqrSTUvwxYZ123456789\n\nTap and hold (mobile) or click (desktop) on the token to select it, then copy it.",
+        tip: "The token is the long string of numbers and letters after 'Use this token to access the HTTP API:' in BotFather's message. If you lost it, you can get it again by sending /token to BotFather and selecting your bot.",
       },
       {
         title: "Save both keys",
