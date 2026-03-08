@@ -28,9 +28,10 @@ function CertificateContent() {
 
   const fireConfetti = useCallback(async () => {
     try {
-      // Play celebration sound
-      const audio = new Audio("/audio/disney.mp3");
-      audio.volume = 0.5;
+      // Play celebration sound effect (lobster sound, slightly extended)
+      const audio = new Audio("/audio/lobster.wav");
+      audio.volume = 0.6;
+      audio.playbackRate = 0.85; // Slow it down slightly to make it feel longer
       audio.play().catch(() => { /* autoplay blocked */ });
 
       // Fire confetti
