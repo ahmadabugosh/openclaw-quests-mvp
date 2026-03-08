@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
   );
 
   const completedIds = progressResult.rows
-    .filter((r) => r.status === "completed")
-    .map((r) => r.quest_id);
+    .filter((r: any) => r.status === "completed")
+    .map((r: any) => r.quest_id);
 
   const hatchResult = await pool.query(
     "SELECT hatch_date FROM users WHERE id = $1",

@@ -27,7 +27,7 @@ export async function getPageViewCounts(): Promise<Array<{ path: string; views: 
      GROUP BY page_path
      ORDER BY views DESC, path ASC`
   );
-  return result.rows.map(row => ({ path: row.path, views: parseInt(row.views) }));
+  return result.rows.map((row: any) => ({ path: row.path, views: parseInt(row.views) }));
 }
 
 export async function getCompletionFunnel(): Promise<{
