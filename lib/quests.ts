@@ -359,7 +359,7 @@ export const QUESTS: Quest[] = [
     id: 9,
     title: "Skill Collector",
     summary: "Install skills from ClawHub and set up web search with the Brave API.",
-    videoUrl: "",
+    videoUrl: "/videos/quest9-skills-and-apis.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/skill-collector",
     steps: ["Browse ClawHub", "Install a skill", "Set up Brave Search API"],
     guide: [
@@ -406,9 +406,16 @@ export const QUESTS: Quest[] = [
     steps: ["Create Twitter developer app", "Configure credentials", "Test connection"],
     guide: [
       {
+        title: "Create an X.com account for your bot",
+        description: "If you don't already have a separate X/Twitter account for your bot, create one now. Go to x.com and sign up with a new email address. Choose a username that represents your bot (e.g., @MyClawBot).",
+        command: "# Visit: https://x.com",
+        tip: "Use a separate email for your bot account. Gmail allows '+' addressing: yourname+botname@gmail.com counts as a unique email to X but goes to your main inbox.",
+      },
+      {
         title: "Create a Twitter/X developer account",
-        description: "Go to developer.x.com and sign up for a developer account. The free tier gives you enough API access to get started.",
+        description: "Log in to your bot's X account, then go to developer.x.com and sign up for a developer account. The free tier gives you enough API access to get started.",
         command: "# Visit: https://developer.x.com",
+        tip: "Make sure you're logged into your BOT account, not your personal X account, before applying for developer access.",
       },
       {
         title: "Create a new app and get credentials",
