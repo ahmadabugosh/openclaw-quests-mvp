@@ -41,24 +41,61 @@ function CertificateContent() {
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setCompletedCount((JSON.parse(saved) as number[]).length);
-      const name = localStorage.getItem(NAME_KEY);
-      if (name) setUserName(name); else setIsEditing(true);
-
-      const payment = searchParams.get("payment");
-      const sessionId = searchParams.get("session_id");
-      if (payment === "success" && sessionId) {
-        setIsPaid(true);
-        localStorage.setItem("openclaw-quests-paid", "true");
-        localStorage.setItem("openclaw-quests-session-id", sessionId);
+    async function loadData() {
+      try {
+        // Try to load from API first
+        const res = await fetch("/api/quests/progress");
+        if (res.ok) {
+          const data = await res.json();
+          setCompletedCount(data.completedIds?.length || 0);
+          if (data.isPaid) {
+            setIsPaid(true);
+            localStorage.setItem("openclaw-quests-paid", "true");
+          }
+          if (data.attestation) {
+            setAttestation(data.attestation);
+            localStorage.setItem("openclaw-quests-attestation", JSON.stringify(data.attestation));
+          }
+          if (data.username) {
+            setUserName(data.username);
+            localStorage.setItem(NAME_KEY, data.username);
+          }
+          // Check if coming back from Stripe payment
+          const payment = searchParams.get("payment");
+          const sessionId = searchParams.get("session_id");
+          if (payment === "success" && sessionId) {
+            setIsPaid(true);
+            localStorage.setItem("openclaw-quests-paid", "true");
+            localStorage.setItem("openclaw-quests-session-id", sessionId);
+          }
+          return;
+        }
+      } catch {
+        // Fall back to localStorage if API fails
       }
-      if (localStorage.getItem("openclaw-quests-paid")) setIsPaid(true);
 
-      const savedAtt = localStorage.getItem("openclaw-quests-attestation");
-      if (savedAtt) setAttestation(JSON.parse(savedAtt));
-    } catch { /* */ }
+      // Fallback: load from localStorage
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) setCompletedCount((JSON.parse(saved) as number[]).length);
+        const name = localStorage.getItem(NAME_KEY);
+        if (name) setUserName(name); else setIsEditing(true);
+
+        const payment = searchParams.get("payment");
+        const sessionId = searchParams.get("session_id");
+        if (payment === "success" && sessionId) {
+          setIsPaid(true);
+          localStorage.setItem("openclaw-quests-paid", "true");
+          localStorage.setItem("openclaw-quests-session-id", sessionId);
+        }
+        if (localStorage.getItem("openclaw-quests-paid")) setIsPaid(true);
+
+        const savedAtt = localStorage.getItem("openclaw-quests-attestation");
+        if (savedAtt) setAttestation(JSON.parse(savedAtt));
+      } catch { /* */ }
+    }
+    
+    loadData();
   }, [searchParams]);
 
   function saveName() {
