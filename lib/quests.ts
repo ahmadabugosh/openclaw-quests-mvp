@@ -188,7 +188,7 @@ export const QUESTS: Quest[] = [
     id: 5,
     title: "Teach It to Talk",
     summary: "Link your Telegram bot and start the gateway. Your agent comes alive!",
-    videoUrl: "",
+    videoUrl: "/videos/quest5-start-and-pair.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/teach-it-to-talk",
     steps: ["Start the gateway", "Get your pairing code", "Approve the pairing", "See it come online"],
     guide: [
