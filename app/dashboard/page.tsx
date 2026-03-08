@@ -199,6 +199,21 @@ function DashboardContent() {
     <main className="min-h-screen bg-slate-950 p-4 text-slate-100 md:p-8">
       <AnalyticsTracker path="/dashboard" />
 
+      {/* Logout button */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => {
+            if (confirm("Log out? Your progress is saved on the server.")) {
+              localStorage.clear();
+              window.location.href = "/login";
+            }
+          }}
+          className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-400 transition-colors hover:border-cyan-500 hover:text-cyan-300"
+        >
+          Log out
+        </button>
+      </div>
+
       {isAdmin && (
         <div className="mb-4 rounded-lg border border-amber-500/50 bg-amber-950/30 px-4 py-2 text-center text-sm text-amber-300">
           🔧 Admin Mode — checkboxes enabled for quick testing
