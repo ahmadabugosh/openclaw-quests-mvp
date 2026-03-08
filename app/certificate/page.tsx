@@ -28,6 +28,12 @@ function CertificateContent() {
 
   const fireConfetti = useCallback(async () => {
     try {
+      // Play celebration sound
+      const audio = new Audio("/audio/disney.mp3");
+      audio.volume = 0.5;
+      audio.play().catch(() => { /* autoplay blocked */ });
+
+      // Fire confetti
       const confetti = (await import("canvas-confetti")).default;
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ["#d97706", "#fbbf24", "#67e8f9", "#4ade80"] });
       setTimeout(() => {

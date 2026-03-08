@@ -401,7 +401,7 @@ export const QUESTS: Quest[] = [
     id: 10,
     title: "Go Social",
     summary: "Connect your agent to X/Twitter. Now it can post, search, and engage for you.",
-    videoUrl: "",
+    videoUrl: "/videos/quest10-twitter-integration.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/go-social",
     steps: ["Create Twitter developer app", "Configure credentials", "Test connection"],
     guide: [
@@ -450,7 +450,7 @@ export const QUESTS: Quest[] = [
     id: 11,
     title: "Lock the Door",
     summary: "Set up SSH key authentication so you can log in securely without typing your password every time.",
-    videoUrl: "",
+    videoUrl: "/videos/quest11-ssh-keys-security.mp4",
     blogUrl: "https://resources.learnopenclaw.ai/lock-the-door",
     steps: ["Generate SSH key", "Copy it to your server", "Disable password login"],
     guide: [
