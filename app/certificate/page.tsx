@@ -56,9 +56,12 @@ function CertificateContent() {
             setAttestation(data.attestation);
             localStorage.setItem("openclaw-quests-attestation", JSON.stringify(data.attestation));
           }
-          if (data.username) {
-            setUserName(data.username);
-            localStorage.setItem(NAME_KEY, data.username);
+          // Load custom display name from localStorage (not database username)
+          const savedName = localStorage.getItem(NAME_KEY);
+          if (savedName) {
+            setUserName(savedName);
+          } else {
+            setIsEditing(true);
           }
           // Check if coming back from Stripe payment
           const payment = searchParams.get("payment");
