@@ -43,7 +43,7 @@ export function DiscordHelp() {
             </div>
             <h3 className="text-xl font-bold text-purple-300 mb-2">Need Help?</h3>
             <p className="text-sm text-slate-300 mb-4">
-              Join our Discord community! Get support, share your projects, and connect with other OpenClaw operators.
+              Join our Discord community! Get support if you're stuck, share what you're working on, and connect with fellow OpenClaw learners.
             </p>
             
             <a

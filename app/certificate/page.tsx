@@ -267,7 +267,7 @@ function CertificateContent() {
                 doc.text(userName, w / 2, y, { align: "center" });
                 y += 5; doc.setDrawColor(217, 119, 6); doc.setLineWidth(0.3); doc.line(w / 2 - 50, y, w / 2 + 50, y);
                 y += 10; doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(180, 180, 200);
-                doc.text("has successfully completed the OpenClaw Quests Program and demonstrated", w / 2, y, { align: "center" });
+                doc.text("has successfully completed the OpenClaw Hatch and demonstrated", w / 2, y, { align: "center" });
                 doc.text("proficiency in AI agent deployment, automation, and operations.", w / 2, y + 5, { align: "center" });
                 doc.text("This individual has earned the title of:", w / 2, y + 10, { align: "center" });
                 y += 22; doc.setDrawColor(217, 119, 6); doc.setLineWidth(0.8); doc.setFillColor(40, 30, 20);
@@ -325,8 +325,40 @@ function CertificateContent() {
               </div>
             )}
             <div className="text-center">
-              <p className="text-4xl mb-2">🥚→🦞</p>
-              <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Quest Summary</p>
+              <div className="flex items-center justify-center gap-3 mb-2">
+                {/* Egg SVG */}
+                <svg viewBox="0 0 100 100" className="w-12 h-12">
+                  <defs>
+                    <linearGradient id="eggGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style={{stopColor: "#fef3c7", stopOpacity: 1}} />
+                      <stop offset="100%" style={{stopColor: "#fbbf24", stopOpacity: 1}} />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="50" cy="55" rx="28" ry="35" fill="url(#eggGradient)" stroke="#f59e0b" strokeWidth="2" />
+                  <ellipse cx="40" cy="45" rx="8" ry="12" fill="rgba(255,255,255,0.4)" />
+                </svg>
+                {/* Arrow */}
+                <span className="text-2xl text-slate-500">→</span>
+                {/* Baby Lobster SVG */}
+                <svg viewBox="0 0 100 100" className="w-12 h-12">
+                  <ellipse cx="50" cy="55" rx="22" ry="25" fill="#ff6b6b" />
+                  <ellipse cx="50" cy="60" rx="18" ry="15" fill="#ff4444" />
+                  <circle cx="43" cy="45" r="6" fill="white" />
+                  <circle cx="57" cy="45" r="6" fill="white" />
+                  <circle cx="44" cy="44" r="3" fill="#1a1a2e" />
+                  <circle cx="58" cy="44" r="3" fill="#1a1a2e" />
+                  <circle cx="44.5" cy="43" r="1.5" fill="white" />
+                  <circle cx="58.5" cy="43" r="1.5" fill="white" />
+                  <path d="M 45,54 Q 50,58 55,54" fill="none" stroke="#1a1a2e" strokeWidth="1.5" strokeLinecap="round" />
+                  <ellipse cx="30" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(-30,30,58)" />
+                  <ellipse cx="70" cy="58" rx="7" ry="5" fill="#ff6b6b" transform="rotate(30,70,58)" />
+                  <line x1="43" y1="36" x2="35" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="57" y1="36" x2="65" y2="25" stroke="#ff6b6b" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="35" cy="25" r="2" fill="#ff4444" />
+                  <circle cx="65" cy="25" r="2" fill="#ff4444" />
+                </svg>
+              </div>
+              <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Hatch Summary</p>
               <h2 className="mt-3 text-3xl font-bold text-slate-200">{userName}&apos;s Journey</h2>
               <p className="mt-2 text-slate-400">Completed {completedCount} of 12 quests</p>
               <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-2 max-w-lg mx-auto text-sm">
@@ -382,7 +414,7 @@ function CertificateContent() {
                 </div>
 
                 <p className="mt-6 text-slate-400 max-w-lg mx-auto leading-relaxed">
-                  has successfully completed the <span className="text-amber-300 font-semibold">OpenClaw Quests Program</span> and demonstrated proficiency in AI agent deployment, automation, and operations. This individual has earned the title of:
+                  has successfully completed the <span className="text-amber-300 font-semibold">OpenClaw Hatch</span> and demonstrated proficiency in AI agent deployment, automation, and operations. This individual has earned the title of:
                 </p>
 
                 <div className="mt-6 inline-block rounded-xl border-2 border-amber-500/30 bg-amber-950/20 px-8 py-4">

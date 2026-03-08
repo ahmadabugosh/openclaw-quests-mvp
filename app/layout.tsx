@@ -19,7 +19,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://carefree-cooperatio
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "OpenClaw Quests — Hatch your AI agent",
+  title: "Learn OpenClaw Course - Hatch Your AI Agent",
   description: "Complete 12 real OpenClaw setup quests, hatch your AI agent, and earn a verified on-chain credential on Base.",
   openGraph: {
     title: "OpenClaw Quests — Hatch your AI agent 🦞",
