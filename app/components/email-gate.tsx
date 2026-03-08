@@ -97,7 +97,7 @@ export function EmailGate({ onVerified }: Props) {
       <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-8">
         <div className="text-center">
           <p className="text-6xl mb-4">🥚</p>
-          <h2 className="text-2xl font-bold text-slate-100">Start Your Journey</h2>
+          <h2 className="text-2xl font-bold text-slate-100">Start Your OpenClaw Journey</h2>
           <p className="mt-2 text-sm text-slate-400">
             Enter your email to begin hatching your AI agent.
           </p>

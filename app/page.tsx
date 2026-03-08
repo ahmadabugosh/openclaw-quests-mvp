@@ -9,7 +9,7 @@ export default function Home() {
         <div className="space-y-3">
           <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Free OpenClaw Course for Beginners</p>
           <h1 className="text-4xl font-bold md:text-6xl flex items-center justify-center gap-3">
-            Hatch your AI agent{" "}
+            Hatch Your OpenClaw AI agent{" "}
             <span className="inline-flex items-center gap-2">
               <svg viewBox="0 0 100 100" className="w-10 h-10 md:w-14 md:h-14 inline-block">
                 <defs>

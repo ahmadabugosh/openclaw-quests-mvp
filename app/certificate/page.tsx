@@ -180,9 +180,9 @@ function CertificateContent() {
         {!isPaid && (
           <div className="mb-8 rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-950/20 to-slate-900 p-8 text-center">
             <p className="text-5xl mb-3">🏆</p>
-            <h2 className="text-2xl font-black text-slate-100">Get Your Verified Credential</h2>
+            <h2 className="text-2xl font-black text-slate-100">Get Your Verified Certificate</h2>
             <p className="mt-2 text-slate-400 max-w-lg mx-auto">
-              Mint your certificate as a permanent on-chain attestation on Base. Share it on LinkedIn and X as verified proof of your skills.
+              Mint your credential as a permanent on-chain attestation on Base. Share it on LinkedIn and X as verified proof of your skills!
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <button onClick={handleStripePayment} disabled={paymentLoading} className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-4 font-bold text-slate-900 text-lg transition-transform hover:scale-105 disabled:opacity-50">
