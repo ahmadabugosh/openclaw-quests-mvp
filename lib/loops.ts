@@ -86,6 +86,41 @@ export function pushPaymentCompleted(email: string, method: "stripe" | "crypto")
   );
 }
 
+export function pushQuestCompleted(email: string, questId: number, totalCompleted: number) {
+  return pushLoopsEvent(
+    email,
+    "quest_completed",
+    {
+      questsCompletedCount: totalCompleted,
+      lastQuestCompletedAt: new Date().toISOString(),
+    },
+    { questId, totalCompleted }
+  );
+}
+
+export function pushUserLogin(email: string, authMethod: "email" | "github" | "otp") {
+  return pushLoopsEvent(
+    email,
+    "user_login",
+    {
+      lastLoginAt: new Date().toISOString(),
+      authMethod,
+    }
+  );
+}
+
+export function pushUserSignup(email: string, username: string, authMethod: "email" | "github" | "otp") {
+  return pushLoopsEvent(
+    email,
+    "user_signup",
+    {
+      firstName: username,
+      signupMethod: authMethod,
+      source: "openclaw-quests",
+    }
+  );
+}
+
 export function pushAttestationCreated(email: string, uid: string, url: string) {
   return pushLoopsEvent(
     email,

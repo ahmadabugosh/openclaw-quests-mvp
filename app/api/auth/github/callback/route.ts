@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookieOptions } from "@/lib/auth";
 import { createSession, findOrCreateGithubUser } from "@/lib/auth-db";
 import { serverDb } from "@/lib/server-db";
+import { pushUserLogin } from "@/lib/loops";
 
 type GithubTokenResponse = { access_token?: string };
 type GithubUser = { id: number; login: string; email: string | null };
@@ -63,6 +64,7 @@ export async function GET(request: Request) {
   const email = ghUser.email ?? `${ghUser.login}@users.noreply.github.com`;
   const user = findOrCreateGithubUser(serverDb, String(ghUser.id), email, ghUser.login);
   const session = createSession(serverDb, user.id);
+  pushUserLogin(email, "github").catch(() => {});
 
   const response = NextResponse.redirect(new URL("/dashboard", request.url));
   response.headers.append("Set-Cookie", `ocq_session=${session.token}; ${cookieOptions(session.expiresAt)}`);

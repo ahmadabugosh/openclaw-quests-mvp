@@ -3,6 +3,7 @@ import { verifyOTP } from "@/lib/otp";
 import { getUserByEmail, createSession } from "@/lib/auth-pg";
 import { pool } from "@/lib/postgres-db";
 import { createHash, randomBytes } from "node:crypto";
+import { pushUserLogin, pushUserSignup } from "@/lib/loops";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,6 +22,7 @@ export async function POST(req: NextRequest) {
 
     // Find or create user
     let user = await getUserByEmail(emailLower);
+    const isNewUser = !user;
 
     if (!user) {
       // Create user with a generated username
@@ -35,6 +37,13 @@ export async function POST(req: NextRequest) {
       );
 
       user = await getUserByEmail(emailLower);
+    }
+
+    // Push to Loops.so
+    if (isNewUser) {
+      pushUserSignup(emailLower, emailLower.split("@")[0], "otp").catch(() => {});
+    } else {
+      pushUserLogin(emailLower, "otp").catch(() => {});
     }
 
     // Create session

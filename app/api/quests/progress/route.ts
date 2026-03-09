@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromSession } from "@/lib/auth-pg";
 import { pool } from "@/lib/postgres-db";
-import { pushCourseCompleted } from "@/lib/loops";
+import { pushCourseCompleted, pushQuestCompleted } from "@/lib/loops";
 
 async function getUserFromRequest(req: NextRequest) {
   const cookie = req.cookies.get("ocq_session")?.value;
@@ -85,14 +85,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // If this was a completion (not uncomplete), check if all 12 are now done
-  if (action !== "uncomplete") {
+  // If this was a completion (not uncomplete), push to Loops
+  if (action !== "uncomplete" && user.email) {
     const countResult = await pool.query(
       "SELECT COUNT(*) as cnt FROM quest_progress WHERE user_id = $1 AND status = 'completed'",
       [user.id]
     );
-    if (parseInt(countResult.rows[0].cnt) === 12 && user.email) {
-      // Fire and forget — don't block the response
+    const total = parseInt(countResult.rows[0].cnt);
+
+    // Push every quest completion (count + timestamp)
+    pushQuestCompleted(user.email, questId, total).catch(() => {});
+
+    // Also fire course_completed when they hit 12
+    if (total === 12) {
       pushCourseCompleted(user.email).catch(() => {});
     }
   }
