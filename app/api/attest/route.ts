@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { createAttestation, getAttestationUrl } from "@/lib/eas";
 import { getUserFromSession } from "@/lib/auth-pg";
 import { pool } from "@/lib/postgres-db";
+import { pushPaymentCompleted, pushAttestationCreated } from "@/lib/loops";
 
 export async function POST(req: NextRequest) {
   try {
@@ -90,6 +91,13 @@ export async function POST(req: NextRequest) {
         // Non-critical
       }
 
+      // Push milestones to Loops.so (fire and forget)
+      const stripeEmail = user?.email || session.metadata?.userEmail || session.customer_email;
+      if (stripeEmail) {
+        pushPaymentCompleted(stripeEmail, "stripe").catch(() => {});
+        pushAttestationCreated(stripeEmail, result.uid, getAttestationUrl(result.uid)).catch(() => {});
+      }
+
       return NextResponse.json({
         uid: result.uid,
         txHash: result.txHash,
@@ -138,6 +146,12 @@ export async function POST(req: NextRequest) {
             [user.id, result.uid, getAttestationUrl(result.uid), new Date().toISOString()]
           );
         }
+      }
+
+      // Push milestones to Loops.so (fire and forget)
+      if (user?.email) {
+        pushPaymentCompleted(user.email, "crypto").catch(() => {});
+        pushAttestationCreated(user.email, result.uid, getAttestationUrl(result.uid)).catch(() => {});
       }
 
       return NextResponse.json({

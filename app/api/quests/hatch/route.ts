@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromSession } from "@/lib/auth-pg";
 import { pool } from "@/lib/postgres-db";
+import { pushEggHatched } from "@/lib/loops";
 
 export async function POST(req: NextRequest) {
   const cookie = req.cookies.get("ocq_session")?.value;
@@ -24,6 +25,11 @@ export async function POST(req: NextRequest) {
     "UPDATE users SET hatch_date = $1 WHERE id = $2 AND hatch_date IS NULL",
     [now, user.id]
   );
+
+  // Push to Loops.so (fire and forget)
+  if (user.email) {
+    pushEggHatched(user.email).catch(() => {});
+  }
 
   return NextResponse.json({ ok: true, hatchDate: now });
 }
