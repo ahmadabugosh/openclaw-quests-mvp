@@ -115,7 +115,7 @@ export function pushUserSignup(email: string, username: string, authMethod: "ema
     "user_signup",
     {
       firstName: username,
-      signupMethod: authMethod,
+      authMethod,
       source: "openclaw-quests",
     }
   );
