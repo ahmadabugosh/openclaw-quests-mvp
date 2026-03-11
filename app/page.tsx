@@ -67,12 +67,7 @@ export default function Home() {
             <span className="relative z-10">Start Hatching</span>
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
           </Link>
-          <Link
-            href="/u/demo"
-            className="rounded-full border border-slate-600 px-6 py-2 text-sm font-semibold text-slate-400 transition hover:border-slate-400 hover:text-slate-200"
-          >
-            View Example Profile
-          </Link>
+
         </div>
       </section>
     </main>
