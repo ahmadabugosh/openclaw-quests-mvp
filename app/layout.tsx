@@ -63,6 +63,27 @@ export default function RootLayout({
             `,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '161559441193871');
+              fbq('track', 'PageView');
+            `,
+          }}
+        />
+        <noscript>
+          <img height="1" width="1" style={{ display: 'none' }}
+            src="https://www.facebook.com/tr?id=161559441193871&ev=PageView&noscript=1"
+          />
+        </noscript>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -76,7 +97,7 @@ export default function RootLayout({
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <a href="https://learnopenclaw.ai" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">LearnOpenClaw.ai</a>
               <span className="hidden sm:inline">•</span>
-              <a href="https://x.com/LearnOpenClaw" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">Follow us on 𝕏</a>
+              <a href="http://twitter.com/hatchopenclaw" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">Follow us on 𝕏</a>
               <span className="hidden sm:inline">•</span>
               <span>Built by <a href="https://x.com/aabugosh" target="_blank" rel="noreferrer" className="text-amber-400/70 hover:text-amber-300 transition-colors">@aabugosh</a></span>
             </div>
